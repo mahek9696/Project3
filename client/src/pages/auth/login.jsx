@@ -16,7 +16,7 @@ function AuthLogin() {
   return (
     <div className="mx-auto w-full max-w-md space-y-6">
       <div className="text-center">
-        <h1 className="text-xl text-slate-800 tracking-tight text-foreground">
+        <h1 className="text-xl font-montserrat text-slate-800 tracking-tight text-foreground">
           LOGIN TO YOUR ACCOUNT
         </h1>
       </div>

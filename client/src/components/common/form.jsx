@@ -109,7 +109,7 @@ function CommonForm({
           // Form fields can be added here
           formControls.map((controlItem) => (
             <div
-              className="grid w-full border border-input"
+              className="grid w-full border border-input "
               key={controlItem.name}
             >
               <label className="mt-2 ml-2 text-left text-[10px] text-foreground">
