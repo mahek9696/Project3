@@ -4,7 +4,7 @@ const cokieParser = require("cookie-parser");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRouter = require("./routes/auth/auth-routes");
-const { registerUser } = require("./controllers/auth-controller");
+const { registerUser, loginUser } = require("./controllers/auth-controller");
 
 //created database - this is the connection string to connect to the MongoDB database which will return a promise
 mongoose

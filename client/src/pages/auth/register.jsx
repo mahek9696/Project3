@@ -6,6 +6,7 @@ import React from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "@/store/auth-slice";
+import { useToast } from "@/hooks/use-toast";
 
 const initialState = {
   userName: "",
@@ -18,14 +19,24 @@ function AuthRegister() {
   const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   function onSubmit(event) {
     event.preventDefault();
     dispatch(registerUser(formData)).then((data) => {
-      console.log("Registration Response:", data);
+      if (data?.payload?.success) {
+        toast({
+          title: data?.payload?.message,
+        });
+        navigate("/auth/login");
+      } else {
+        toast({
+          title: data?.payload?.message,
+          variant: "destructive",
+        });
+      }
     });
   }
-
   console.log("Form Data:", formData);
   return (
     <div className="mx-auto w-full max-w-md space-y-6">

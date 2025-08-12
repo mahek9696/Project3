@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { use, useState } from "react";
 import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import AuthLayout from "./components/auth/layout.jsx";
@@ -18,10 +18,26 @@ import ShoppingCheckout from "./pages/shopping-view/checkout.jsx";
 import CheckAuth from "./components/common/check-auth";
 import React from "react";
 import UnauthPage from "./pages/unauth-page";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { checkAuth } from "./store/auth-slice";
+import { useEffect } from "react";
 
 function App() {
-  const isAuthenticated = false; // Replace with actual authentication logic
-  const user = null; // Replace with actual user data
+  const { user, isAuthenticated, isLoading } = useSelector(
+    (state) => state.auth
+  );
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(checkAuth());
+  }, [dispatch]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="flex flex-col overflow-hidden bg-white">
       <Routes>
