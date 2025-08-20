@@ -1,13 +1,15 @@
-import { Label } from "../ui/label";
-import { SelectContent } from "../ui/select";
-import { Textarea } from "../ui/textarea";
+import React, { Fragment, useState } from "react";
 import { Input } from "../ui/input";
+import { Label } from "../ui/label";
 import {
   Select,
+  SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@radix-ui/react-select";
+} from "../ui/select";
+import { Textarea } from "../ui/textarea";
+
 import { Button } from "../ui/button";
 
 function CommonForm({
@@ -52,13 +54,13 @@ function CommonForm({
             value={value}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder={getControlItem.placeholder} />
+              <SelectValue placeholder={getControlItem.label} />
             </SelectTrigger>
             <SelectContent>
               {getControlItem.options && getControlItem.options.length > 0
                 ? getControlItem.options.map((optionItem) => (
                     <SelectItem key={optionItem.id} value={optionItem.id}>
-                      {optionItem.label}
+                      {optionItem.value}
                     </SelectItem>
                   ))
                 : null}
