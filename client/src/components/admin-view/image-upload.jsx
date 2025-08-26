@@ -6,10 +6,12 @@ import { Button } from "@/components/ui/button";
 import { FileIcon } from "lucide-react";
 import React from "react";
 import axios from "axios";
+import { Skeleton } from "../ui/skeleton";
 
 function ProductImageUpload({
   imageFile,
   setImageFile,
+  imageLoadingState,
   uploadedImageUrl,
   setUploadedImageUrl,
   setImageLoadingState,
@@ -43,7 +45,7 @@ function ProductImageUpload({
     console.log(imageFile);
   }
   async function uploadImageToCloudinary() {
-    setImageLoadingState;
+    setImageLoadingState(true);
     const data = new FormData();
     data.append("my_file", imageFile);
     const response = await axios.post(
@@ -87,6 +89,8 @@ function ProductImageUpload({
               Drag & Drop or Click to Upload
             </span>
           </Label>
+        ) : imageLoadingState ? (
+          <Skeleton className="h-12 bg-gray-100" />
         ) : (
           <div className="flex items-center justify-between">
             <div className="flex items-center">
