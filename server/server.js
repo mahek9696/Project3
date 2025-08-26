@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 const authRouter = require("./routes/auth/auth-routes");
 const { registerUser, loginUser } = require("./controllers/auth-controller");
 const adminProductsRouter = require("./routes/admin/products-routes");
+const multer = require("multer");
 
 //created database - this is the connection string to connect to the MongoDB database which will return a promise
 mongoose
@@ -32,12 +33,35 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+// Multer configuration for handling multipart/form-data
+const upload = multer();
+
+// Debug middleware to log incoming requests
+app.use((req, res, next) => {
+  console.log("Request Method:", req.method);
+  console.log("Content-Type:", req.headers["content-type"]);
+  console.log("Request Body:", req.body);
+  next();
+});
+
 app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductsRouter);
 
 // /api/auth/registerUser ->registerUser
 // /api/auth/login -> loginUser
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error("Error:", err);
+  res.status(500).json({
+    success: false,
+    message: "Internal Server Error",
+    error: err.message,
+  });
+});
 
 //ok after mentioning all the properties we can now use the app to listen to a port
 app.listen(PORT, () => {

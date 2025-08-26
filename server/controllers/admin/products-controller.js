@@ -24,6 +24,8 @@ const handleImageUpload = async (req, res) => {
 // Add a new Products
 const addProduct = async (req, res) => {
   try {
+    console.log("Received data:", req.body);
+
     const {
       image,
       title,
@@ -34,6 +36,14 @@ const addProduct = async (req, res) => {
       salePrice,
       totalStock,
     } = req.body;
+
+    // Validate required fields
+    if (!title || !price || !image) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields",
+      });
+    }
 
     const newlyCreatedProduct = new Products({
       image,
@@ -49,7 +59,7 @@ const addProduct = async (req, res) => {
     await newlyCreatedProduct.save();
     res.status(201).json({
       success: true,
-      // message: "Product added successfully",
+      message: "Product added successfully",
       data: newlyCreatedProduct,
     });
   } catch (e) {

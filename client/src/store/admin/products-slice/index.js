@@ -9,16 +9,23 @@ const initialState = {
 export const addNewProduct = createAsyncThunk(
   "/products/addnewproduct",
   async (formData) => {
-    const result = await axios.post(
-      "http://localhost:5000/api/admin/products/add",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    return result?.data;
+    try {
+      console.log("Sending product data:", formData);
+
+      const result = await axios.post(
+        "http://localhost:5000/api/admin/products/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      return result?.data;
+    } catch (error) {
+      console.error("API Error adding product:", error);
+      throw error;
+    }
   }
 );
 
@@ -73,7 +80,7 @@ const AdminProductsSlice = createSlice({
       console.log(action.payload);
 
       state.isLoading = false;
-      state.productList = action.payload;
+      state.productList = action.payload.data;
     });
     builder.addCase(fetchAllProducts.rejected, (state, action) => {
       state.isLoading = false;
