@@ -5,6 +5,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const authRouter = require("./routes/auth/auth-routes");
 const { registerUser, loginUser } = require("./controllers/auth-controller");
+const adminProductsRouter = require("./routes/admin/products-routes");
 
 //created database - this is the connection string to connect to the MongoDB database which will return a promise
 mongoose
@@ -33,6 +34,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use("/api/auth", authRouter);
+app.use("/api/admin/products", adminProductsRouter);
 
 // /api/auth/registerUser ->registerUser
 // /api/auth/login -> loginUser

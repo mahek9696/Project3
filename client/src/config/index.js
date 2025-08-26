@@ -52,6 +52,7 @@ export const addProductFormElements = [
     label: "Description",
     name: "description",
     componentType: "textarea",
+
     placeholder: "Enter product description",
   },
   {
@@ -59,11 +60,11 @@ export const addProductFormElements = [
     name: "category",
     componentType: "select",
     options: [
-      { id: "men", value: "Men" },
-      { id: "women", value: "Women" },
-      { id: "kids", value: "Kids" },
-      { id: "accessories", value: "Accessories" },
-      { id: "footwear", value: "Footwear" },
+      { id: "men", label: "Men" },
+      { id: "women", label: "Women" },
+      { id: "kids", label: "Kids" },
+      { id: "accessories", label: "Accessories" },
+      { id: "footwear", label: "Footwear" },
     ],
   },
   {
@@ -71,9 +72,9 @@ export const addProductFormElements = [
     name: "brand",
     componentType: "select",
     options: [
-      { id: "nike", value: "Nike" },
-      { id: "adidas", value: "Adidas" },
-      { id: "puma", value: "Puma" },
+      { id: "nike", label: "Nike" },
+      { id: "adidas", label: "Adidas" },
+      { id: "puma", label: "Puma" },
     ],
   },
   {
