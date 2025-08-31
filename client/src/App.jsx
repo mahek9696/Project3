@@ -23,6 +23,7 @@ import { useDispatch } from "react-redux";
 import { checkAuth } from "./store/auth-slice";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import loadingGif from "@/assets/JVX7.gif"; // Path to your loading GIF in assets folder
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -36,7 +37,19 @@ function App() {
   }, [dispatch]);
 
   if (isLoading) {
-    return <Skeleton className="h-[600px] w-[800px] bg-black" />;
+    return (
+      // <Skeleton
+      //   className="h-[600px] w-[800px] bg-black"
+      //   href="https://www.awwwards.com/inspiration/loading-animation-text-sequence-hochburg"
+      // />
+      <div className="flex items-center justify-center min-h-screen bg-white ">
+        <img
+          src={loadingGif}
+          alt="Loading..."
+          className="h-104 w-104 items-center" // Adjust size as needed
+        />
+      </div>
+    );
   }
   console.log(isLoading, user);
 
