@@ -93,6 +93,7 @@ const fetchAllProducts = async (req, res) => {
 const editProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log("Product ID from URL:", id);
     const {
       image,
       title,

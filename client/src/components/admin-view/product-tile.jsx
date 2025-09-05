@@ -39,7 +39,7 @@ function AdminProductTile({
           <Button
             onClick={() => {
               setOpenCreateProductsDialog(true);
-              setCurrentEditedId(product?.id);
+              setCurrentEditedId(product?._id);
               setFormData(product);
             }}
             className="bg-red-950 text-white hover:bg-maroon-600"
