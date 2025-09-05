@@ -41,19 +41,49 @@ export const fetchAllProducts = createAsyncThunk(
 );
 
 // 3
+// export const editProduct = createAsyncThunk(
+//   "/products/editProduct",
+//   async ({ id, formData }) => {
+//     const result = await axios.put(
+//       `http://localhost:5000/api/admin/products/edit/${id}`,
+//       formData,
+//       {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+//     return result?.data;
+//   }
+// );
 export const editProduct = createAsyncThunk(
-  "/products/editProduct",
-  async ({ id, formData }) => {
-    const result = await axios.put(
-      `http://localhost:5000/api/admin/products/edit/${id}`,
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+  "adminProducts/editProduct",
+  async ({ id, formData }, { rejectWithValue }) => {
+    try {
+      console.log("Editing product:", id);
+      console.log("Edit data:", formData);
+
+      const response = await axios.put(
+        `http://localhost:5000/api/admin/products/edit-product/${id}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log("Edit response:", response.data);
+
+      if (!response.data.success) {
+        return rejectWithValue(response.data.message);
       }
-    );
-    return result?.data;
+
+      return response.data.product;
+    } catch (error) {
+      console.error("Edit error:", error);
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
   }
 );
 
