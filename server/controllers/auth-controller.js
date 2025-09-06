@@ -52,7 +52,11 @@ const loginUser = async (req, res) => {
     //   { expiresIn: "15m" }
     // );
     const token = jwt.sign(
-      { id: checkUser._id, role: checkUser.role, email: checkUser.email },
+      {
+        email: checkUser.email,
+        role: checkUser.role,
+        id: checkUser._id,
+      },
       "CLIENT_SECRET_KEY",
       { expiresIn: "30m" }
     );
