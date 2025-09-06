@@ -14,9 +14,11 @@ import {
   addNewProduct,
   editProduct,
   fetchAllProducts,
+  deleteProduct,
 } from "@/store/admin/products-slice";
 import { useToast } from "@/hooks/use-toast";
 import AdminProductTile from "@/components/admin-view/product-tile";
+import { Item } from "@radix-ui/react-select";
 
 const initialFormData = {
   image: null,
@@ -53,6 +55,16 @@ function AdminProducts() {
           })
         ).then((data) => {
           console.log(data, "Edit Data !");
+
+          if (data?.payload?.success) {
+            dispatch(fetchAllProducts());
+            setFormData(initialFormData);
+            setOpenCreateProductsDialog(false);
+            setCurrentEditedId(null);
+            toast({
+              title: "Product edited successfully",
+            });
+          }
         })
       : dispatch(
           addNewProduct({
@@ -74,6 +86,26 @@ function AdminProducts() {
         });
     console.log(formData, "formData");
   }
+
+  function handleDelete(getCurrentProductId) {
+    console.log(getCurrentProductId, "getCurrentProductId");
+    dispatch(deleteProduct(getCurrentProductId)).then((data) => {
+      console.log(data, "Delete Data !");
+      if (data?.payload?.success) {
+        dispatch(fetchAllProducts());
+        toast({
+          title: "Product deleted successfully",
+        });
+      }
+    });
+  }
+
+  function isFormValid() {
+    return Object.keys(formData)
+      .map((key) => formData[key] !== "")
+      .every((item) => item);
+  }
+
   useEffect(() => {
     dispatch(fetchAllProducts());
   }, [dispatch]);
@@ -95,6 +127,7 @@ function AdminProducts() {
                 setOpenCreateProductsDialog={setOpenCreateProductsDialog}
                 setCurrentEditedId={setCurrentEditedId}
                 product={productItem}
+                handleDelete={handleDelete}
               />
             ))
           : null}
@@ -131,6 +164,7 @@ function AdminProducts() {
               setFormData={setFormData}
               formControls={addProductFormElements}
               buttonText={currentEditedId !== null ? "Edit" : "Add"}
+              isBtnDisabled={!isFormValid()}
             />
           </div>
         </SheetContent>
