@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import { filterOptions } from "@/config";
-import { Label } from "@radix-ui/react-label";
+import { Label } from "../ui/label";
 import { Checkbox } from "../ui/checkbox";
 import { Separator } from "../ui/separator";
 

@@ -8,9 +8,24 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ArrowUpDownIcon } from "lucide-react";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { sortOptions } from "@/config";
+// import { fetchAllProducts } from "@/store/admin/products-slice";
+import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
+import { useSelector } from "react-redux";
+import ShoppingProductTile from "@/components/shopping-view/product-tile";
 
 function ShoppingListing() {
+  const dispatch = useDispatch();
+  const { productList } = useSelector((state) => state.shopProducts);
+
+  useEffect(() => {
+    dispatch(fetchAllFilteredProducts());
+  }, [dispatch]);
+
+  console.log(productList, "productList");
+
   return (
     <div className="grid text-left grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
       {/* Product items will be rendered here */}
@@ -42,6 +57,17 @@ function ShoppingListing() {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
+          {productList && productList.length > 0
+            ? productList.map((productItem) => (
+                <ShoppingProductTile
+                  // handleGetProductDetails={handleGetProductDetails}
+                  product={productItem}
+                  // handleAddtoCart={handleAddtoCart}
+                />
+              ))
+            : null}
         </div>
       </div>
     </div>
