@@ -54,7 +54,7 @@ const shoppingProductSlice = createSlice({
       .addCase(fetchAllFilteredProducts.fulfilled, (state, action) => {
         console.log(action.payload, "action.payload");
         state.isLoading = false;
-        state.productList = action.payload;
+        state.productList = action.payload.data;
       })
       .addCase(fetchAllFilteredProducts.rejected, (state, action) => {
         state.isLoading = false;

@@ -1,8 +1,11 @@
+import { Label } from "@radix-ui/react-label";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
 
 function ShoppingProductTile({ product }) {
+  console.log("Rendering product tile:", product);
+
   return (
     <Card className="w-full max-w-sm mx-auto">
       <div>
@@ -10,9 +13,9 @@ function ShoppingProductTile({ product }) {
           <img
             src={product?.image}
             alt={product?.title}
-            className="w-full h-[300px] object-cover rounded-t-lg"
+            className="w-full h-[300px] object-cover"
           />
-          {/* {product?.totalStock === 0 ? (
+          {product?.totalStock === 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
               Out Of Stock
             </Badge>
@@ -20,12 +23,11 @@ function ShoppingProductTile({ product }) {
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
               {`Only ${product?.totalStock} items left`}
             </Badge>
-          ) : 
-          product?.salePrice > 0 ? (
+          ) : product?.salePrice > 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
               Sale
             </Badge>
-          ) : null} */}
+          ) : null}
           {product?.salePrice > 0 ? (
             <Badge className="absolute top-2 left-2 bg-red-500 hover:bg-red-600">
               Sale
@@ -33,14 +35,14 @@ function ShoppingProductTile({ product }) {
           ) : null}
         </div>
         <CardContent className="p-4">
-          <h2 className="text-xl font-bold mb-2">{product?.title}</h2>
+          <h2 className="text-sm mb-2">{product?.title}</h2>
           <div className="flex justify-between items-center mb-2">
-            <span className="text-[16px] text-muted-foreground">
+            {/* <span className="text-[16px] text-muted-foreground">
               {product?.category}
-            </span>
-            <span className="text-[16px] text-muted-foreground">
+            </span> */}
+            {/* <span className="text-[16px] text-muted-foreground">
               {product?.brand}
-            </span>
+            </span> */}
             {/* <span className="text-[16px] text-muted-foreground">
               {product?.color}
             </span> */}
@@ -49,13 +51,13 @@ function ShoppingProductTile({ product }) {
             <span
               className={`${
                 product?.salePrice > 0 ? "line-through" : ""
-              } text-lg font-semibold text-primary`}
+              } text-sm text-primary`}
             >
-              ${product?.price}
+              ₹{product?.price}
             </span>
             {product?.salePrice > 0 ? (
-              <span className="text-lg font-semibold text-primary">
-                ${product?.salePrice}
+              <span className="text-sm text-primary">
+                ₹{product?.salePrice}
               </span>
             ) : null}
           </div>
