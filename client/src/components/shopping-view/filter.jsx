@@ -2,6 +2,7 @@ import { Fragment } from "react";
 import { filterOptions } from "@/config";
 import { Label } from "@radix-ui/react-label";
 import { Checkbox } from "../ui/checkbox";
+import { Separator } from "../ui/separator";
 
 function ProductFilter() {
   return (
@@ -23,6 +24,7 @@ function ProductFilter() {
                 ))}
               </div>
             </div>
+            <Separator />
           </Fragment>
         ))}
       </div>

@@ -79,6 +79,24 @@ export const addProductFormElements = [
       { id: "puma", label: "Puma" },
     ],
   },
+  // Add color dropdown
+  {
+    label: "Color",
+    name: "color",
+    componentType: "select",
+    options: [
+      { id: "black", label: "Black" },
+      { id: "white", label: "White" },
+      { id: "red", label: "Red" },
+      { id: "blue", label: "Blue" },
+      { id: "green", label: "Green" },
+      { id: "yellow", label: "Yellow" },
+      { id: "purple", label: "Purple" },
+      { id: "brown", label: "Brown" },
+      { id: "gray", label: "Gray" },
+      { id: "multicolor", label: "Multicolor" },
+    ],
+  },
   {
     label: "Price",
     name: "price",
@@ -135,18 +153,37 @@ export const shoppingViewHeaderMenuItems = [
   },
 ];
 export const filterOptions = {
-  Category: [
-    { id: "unisex", label: "Unisex" },
-    { id: "men", label: "Men" },
-    { id: "women", label: "Women" },
-    { id: "kids", label: "Kids" },
-    { id: "accessories", label: "Accessories" },
-    { id: "footwear", label: "Footwear" },
-  ],
-  Brand: [
-    { id: "khadisutra", label: "Khadisutra" },
-    { id: "nike", label: "Nike" },
-    { id: "adidas", label: "Adidas" },
-    { id: "puma", label: "Puma" },
+  // Category: [
+  //   { id: "unisex", label: "Unisex" },
+  //   { id: "men", label: "Men" },
+  //   { id: "women", label: "Women" },
+  //   { id: "kids", label: "Kids" },
+  //   { id: "accessories", label: "Accessories" },
+  //   { id: "footwear", label: "Footwear" },
+  // ],
+  // Brand: [
+  //   { id: "khadisutra", label: "Khadisutra" },
+  //   { id: "nike", label: "Nike" },
+  //   { id: "adidas", label: "Adidas" },
+  //   { id: "puma", label: "Puma" },
+  // ],
+  Color: [
+    { id: "black", label: "Black" },
+    { id: "white", label: "White" },
+    { id: "red", label: "Red" },
+    { id: "blue", label: "Blue" },
+    { id: "green", label: "Green" },
+    { id: "yellow", label: "Yellow" },
+    { id: "purple", label: "Purple" },
+    { id: "brown", label: "Brown" },
+    { id: "gray", label: "Gray" },
+    { id: "multicolor", label: "Multicolor" },
   ],
 };
+
+export const sortOptions = [
+  { id: "price-lowtohigh", label: "Price - Low to High" },
+  { id: "price-hightolow", label: "Price - High to Low" },
+  { id: "title-atoz", label: "Title - A to Z" },
+  { id: "title-ztoa", label: "Title - Z to A" },
+];

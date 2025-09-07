@@ -18,7 +18,6 @@ import {
 } from "@/store/admin/products-slice";
 import { useToast } from "@/hooks/use-toast";
 import AdminProductTile from "@/components/admin-view/product-tile";
-import { Item } from "@radix-ui/react-select";
 
 const initialFormData = {
   image: null,
