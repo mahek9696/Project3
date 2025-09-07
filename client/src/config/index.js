@@ -152,21 +152,52 @@ export const shoppingViewHeaderMenuItems = [
     path: "/shop/listing",
   },
 ];
+
+export const categoryOptionsMap = {
+  men: "Men",
+  women: "Women",
+  kids: "Kids",
+  accessories: "Accessories",
+  footwear: "Footwear",
+};
+
+export const brandOptionsMap = {
+  nike: "Nike",
+  adidas: "Adidas",
+  puma: "Puma",
+  levi: "Levi",
+  zara: "Zara",
+  khadisutra: "Khadisutra",
+};
+
+export const colorOptionsMap = {
+  black: "Black",
+  white: "White",
+  red: "Red",
+  blue: "Blue",
+  green: "Green",
+  yellow: "Yellow",
+  purple: "Purple",
+  brown: "Brown",
+  gray: "Gray",
+  multicolor: "Multicolor",
+};
+
 export const filterOptions = {
-  // Category: [
-  //   { id: "unisex", label: "Unisex" },
-  //   { id: "men", label: "Men" },
-  //   { id: "women", label: "Women" },
-  //   { id: "kids", label: "Kids" },
-  //   { id: "accessories", label: "Accessories" },
-  //   { id: "footwear", label: "Footwear" },
-  // ],
-  // Brand: [
-  //   { id: "khadisutra", label: "Khadisutra" },
-  //   { id: "nike", label: "Nike" },
-  //   { id: "adidas", label: "Adidas" },
-  //   { id: "puma", label: "Puma" },
-  // ],
+  Category: [
+    { id: "unisex", label: "Unisex" },
+    { id: "men", label: "Men" },
+    { id: "women", label: "Women" },
+    { id: "kids", label: "Kids" },
+    { id: "accessories", label: "Accessories" },
+    { id: "footwear", label: "Footwear" },
+  ],
+  Brand: [
+    { id: "khadisutra", label: "Khadisutra" },
+    { id: "nike", label: "Nike" },
+    { id: "adidas", label: "Adidas" },
+    { id: "puma", label: "Puma" },
+  ],
   Color: [
     { id: "black", label: "Black" },
     { id: "white", label: "White" },

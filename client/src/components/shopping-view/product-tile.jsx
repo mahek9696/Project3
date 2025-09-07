@@ -2,9 +2,10 @@ import { Label } from "@radix-ui/react-label";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
+import { brandOptionsMap, categoryOptionsMap, colorOptionsMap } from "@/config";
 
 function ShoppingProductTile({ product }) {
-  console.log("Rendering product tile:", product);
+  // console.log("Rendering product tile:", product);
 
   return (
     <Card className="w-full max-w-sm mx-auto">
@@ -37,15 +38,15 @@ function ShoppingProductTile({ product }) {
         <CardContent className="p-4">
           <h2 className="text-sm mb-2">{product?.title}</h2>
           <div className="flex justify-between items-center mb-2">
-            {/* <span className="text-[16px] text-muted-foreground">
-              {product?.category}
+            <span className="text-sm text-muted-foreground">
+              {categoryOptionsMap[product?.category]}
+            </span>
+            {/* <span className="p-2 text-[16px] text-muted-foreground">
+              {brandOptionsMap[product?.brand]}
             </span> */}
-            {/* <span className="text-[16px] text-muted-foreground">
-              {product?.brand}
-            </span> */}
-            {/* <span className="text-[16px] text-muted-foreground">
-              {product?.color}
-            </span> */}
+            <span className="text-sm text-muted-foreground">
+              {colorOptionsMap[product?.color]}
+            </span>
           </div>
           <div className="flex justify-between items-center mb-2">
             <span
