@@ -12,10 +12,14 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { sortOptions } from "@/config";
 // import { fetchAllProducts } from "@/store/admin/products-slice";
-import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
+import {
+  fetchAllFilteredProducts,
+  fetchProductDetails,
+} from "@/store/shop/products-slice";
 import { useSelector } from "react-redux";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useSearchParams } from "react-router-dom";
+import ProductDetailsDialog from "@/components/shopping-view/product-details";
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -35,10 +39,13 @@ function createSearchParamsHelper(filterParams) {
 
 function ShoppingListing() {
   const dispatch = useDispatch();
-  const { productList } = useSelector((state) => state.shopProducts);
+  const { productList, productDetails } = useSelector(
+    (state) => state.shopProducts
+  );
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
   function handleSort(value) {
     // console.log(value);
@@ -70,6 +77,11 @@ function ShoppingListing() {
     sessionStorage.setItem("filters", JSON.stringify(cpyFilters));
   }
 
+  function handleGetProductDetails(getCurrentProductId) {
+    console.log(getCurrentProductId);
+    dispatch(fetchProductDetails(getCurrentProductId));
+  }
+
   useEffect(() => {
     setSort("price-lowtohigh");
     setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
@@ -90,10 +102,11 @@ function ShoppingListing() {
     }
   }, [dispatch, sort, filters]);
 
-  // console.log("ShoppingProductTile component:", ShoppingProductTile);
-  console.log("cpyFilters:", searchParams, filters);
-  // console.log("productList:", productList);
+  useEffect(() => {
+    if (productDetails !== null) setOpenDetailsDialog(true);
+  }, [productDetails]);
 
+  console.log(productDetails);
   return (
     <div className="grid text-left grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
       <ProductFilter filters={filters} handleFilter={handleFilter} />
@@ -134,7 +147,7 @@ function ShoppingListing() {
           {productList && productList.length > 0 ? (
             productList.map((productItem) => (
               <ShoppingProductTile
-                // handleGetProductDetails={handleGetProductDetails}
+                handleGetProductDetails={handleGetProductDetails}
                 product={productItem}
                 // handleAddtoCart={handleAddtoCart}
               />
@@ -144,6 +157,11 @@ function ShoppingListing() {
           )}
         </div>
       </div>
+      <ProductDetailsDialog
+        open={openDetailsDialog}
+        setOpen={setOpenDetailsDialog}
+        productDetails={productDetails}
+      />
     </div>
   );
 }
