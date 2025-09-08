@@ -15,12 +15,30 @@ import { sortOptions } from "@/config";
 import { fetchAllFilteredProducts } from "@/store/shop/products-slice";
 import { useSelector } from "react-redux";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
+import { useSearchParams } from "react-router-dom";
+
+function createSearchParamsHelper(filterParams) {
+  const queryParams = [];
+
+  for (const [key, value] of Object.entries(filterParams)) {
+    if (Array.isArray(value) && value.length > 0) {
+      const paramValue = value.join(",");
+
+      queryParams.push(`${key}=${encodeURIComponent(paramValue)}`);
+    }
+  }
+
+  console.log(queryParams, "queryParams");
+
+  return queryParams.join("&");
+}
 
 function ShoppingListing() {
   const dispatch = useDispatch();
   const { productList } = useSelector((state) => state.shopProducts);
   const [filters, setFilters] = useState({});
   const [sort, setSort] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
   function handleSort(value) {
     // console.log(value);
@@ -38,16 +56,43 @@ function ShoppingListing() {
         ...cpyFilters,
         [getSectionId]: [getCurrentOption],
       };
+    } else {
+      const indexOfCurrentOption =
+        cpyFilters[getSectionId].indexOf(getCurrentOption);
+      if (indexOfCurrentOption === -1) {
+        cpyFilters[getSectionId].push(getCurrentOption);
+      } else {
+        cpyFilters[getSectionId].splice(indexOfCurrentOption, 1);
+        // console.log(cpyFilters);
+      }
     }
-    console.log(cpyFilters);
+    setFilters(cpyFilters);
+    sessionStorage.setItem("filters", JSON.stringify(cpyFilters));
   }
 
   useEffect(() => {
-    dispatch(fetchAllFilteredProducts());
-  }, [dispatch]);
+    setSort("price-lowtohigh");
+    setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
+  }, []);
+
+  useEffect(() => {
+    if (filters && Object.keys(filters).length > 0) {
+      const createQueryString = createSearchParamsHelper(filters);
+      setSearchParams(new URLSearchParams(createQueryString));
+    }
+  }, [filters]);
+
+  useEffect(() => {
+    if (filters !== null && sort !== null) {
+      dispatch(
+        fetchAllFilteredProducts({ filterParams: filters, sortParams: sort })
+      );
+    }
+  }, [dispatch, sort, filters]);
 
   // console.log("ShoppingProductTile component:", ShoppingProductTile);
-  console.log("productList:", productList);
+  console.log("cpyFilters:", searchParams, filters);
+  // console.log("productList:", productList);
 
   return (
     <div className="grid text-left grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">

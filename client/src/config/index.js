@@ -184,7 +184,7 @@ export const colorOptionsMap = {
 };
 
 export const filterOptions = {
-  Category: [
+  category: [
     { id: "unisex", label: "Unisex" },
     { id: "men", label: "Men" },
     { id: "women", label: "Women" },
@@ -192,13 +192,13 @@ export const filterOptions = {
     { id: "accessories", label: "Accessories" },
     { id: "footwear", label: "Footwear" },
   ],
-  Brand: [
+  brand: [
     { id: "khadisutra", label: "Khadisutra" },
     { id: "nike", label: "Nike" },
     { id: "adidas", label: "Adidas" },
     { id: "puma", label: "Puma" },
   ],
-  Color: [
+  color: [
     { id: "black", label: "Black" },
     { id: "white", label: "White" },
     { id: "red", label: "Red" },
