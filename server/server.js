@@ -9,6 +9,7 @@ const { registerUser, loginUser } = require("./controllers/auth-controller");
 const adminProductsRouter = require("./routes/admin/products-routes");
 const shopProductsRouter = require("./routes/shop/products-routes");
 const shopCartRouter = require("./routes/shop/cart-routes");
+const shopAddressRouter = require("./routes/shop/address-routes");
 
 //created database - this is the connection string to connect to the MongoDB database which will return a promise
 mongoose
@@ -54,6 +55,7 @@ app.use("/api/admin/products", adminProductsRouter);
 
 app.use("/api/shop/products", shopProductsRouter);
 app.use("/api/shop/cart", shopCartRouter);
+app.use("/api/shop/address", shopAddressRouter);
 
 // /api/auth/registerUser ->registerUser
 // /api/auth/login -> loginUser
