@@ -2,12 +2,13 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cokieParser = require("cookie-parser");
 const cors = require("cors");
+const multer = require("multer");
 const cookieParser = require("cookie-parser");
 const authRouter = require("./routes/auth/auth-routes");
 const { registerUser, loginUser } = require("./controllers/auth-controller");
 const adminProductsRouter = require("./routes/admin/products-routes");
 const shopProductsRouter = require("./routes/shop/products-routes");
-const multer = require("multer");
+const shopCartRouter = require("./routes/shop/cart-routes");
 
 //created database - this is the connection string to connect to the MongoDB database which will return a promise
 mongoose
@@ -50,7 +51,9 @@ app.use((req, res, next) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/admin/products", adminProductsRouter);
+
 app.use("/api/shop/products", shopProductsRouter);
+app.use("/api/shop/cart", shopCartRouter);
 
 // /api/auth/registerUser ->registerUser
 // /api/auth/login -> loginUser
