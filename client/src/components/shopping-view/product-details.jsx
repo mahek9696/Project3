@@ -5,10 +5,42 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
+import { useDispatch, useSelector } from "react-redux";
+import { addToCart, fetchCartItems } from "@/store/shop/cart-slice";
+import { toast } from "@/hooks/use-toast";
+import { handler } from "tailwindcss-animate";
+import { setProductDetails } from "@/store/shop/products-slice";
+import { useEffect, useState } from "react";
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  function handleDialogClose() {
+    setOpen(false);
+    dispatch(setProductDetails());
+    // setRating(0);
+    // setReviewMsg("");
+  }
+  function handleAddtoCart(getCurrentProductId, getTotalStock) {
+    console.log(getCurrentProductId);
+
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        dispatch(fetchCartItems(user?.id));
+        toast({
+          title: "Product is added to cart successfully",
+        });
+      }
+    });
+  }
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="grid grid-cols-2 gap-1 sm:p-7 max-w-xl sm:max-w-[80vw] lg:max-w-[70vw]">
         <div className="relative overflow-hidden max-w-xs mx-auto mt-6 mb-6 rounded-lg">
           <img
@@ -71,12 +103,12 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             ) : (
               <Button
                 className="w-full"
-                // onClick={() =>
-                //   handleAddToCart(
-                //     productDetails?._id,
-                //     productDetails?.totalStock
-                //   )
-                // }
+                onClick={() =>
+                  handleAddtoCart(
+                    productDetails?._id
+                    // productDetails?.totalStock
+                  )
+                }
               >
                 Add to Cart
               </Button>

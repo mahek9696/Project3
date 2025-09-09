@@ -20,6 +20,8 @@ import { useSelector } from "react-redux";
 import ShoppingProductTile from "@/components/shopping-view/product-tile";
 import { useSearchParams } from "react-router-dom";
 import ProductDetailsDialog from "@/components/shopping-view/product-details";
+import { addToCart } from "@/store/shop/cart-slice";
+import { toast } from "@/hooks/use-toast";
 
 function createSearchParamsHelper(filterParams) {
   const queryParams = [];
@@ -39,6 +41,8 @@ function createSearchParamsHelper(filterParams) {
 
 function ShoppingListing() {
   const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.auth);
+  const { cartItems } = useSelector((state) => state.shopCart);
   const { productList, productDetails } = useSelector(
     (state) => state.shopProducts
   );
@@ -81,6 +85,41 @@ function ShoppingListing() {
     console.log(getCurrentProductId);
     dispatch(fetchProductDetails(getCurrentProductId));
   }
+  function handleAddtoCart(getCurrentProductId, getTotalStock) {
+    console.log(getCurrentProductId);
+
+    dispatch(
+      addToCart({
+        userId: user?.id,
+        productId: getCurrentProductId,
+        quantity: 1,
+      })
+    ).then((data) => {
+      if (data?.payload?.success) {
+        toast({
+          title: "Product is added to cart successfully",
+        });
+      }
+    });
+    // let getCartItems = cartItems.items || [];
+
+    // if (getCartItems.length) {
+    //   const indexOfCurrentItem = getCartItems.findIndex(
+    //     (item) => item.productId === getCurrentProductId
+    //   );
+    //   if (indexOfCurrentItem > -1) {
+    //     const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+    //     if (getQuantity + 1 > getTotalStock) {
+    //       toast({
+    //         title: `Only ${getQuantity} quantity can be added for this item`,
+    //         variant: "destructive",
+    //       });
+
+    //       return;
+    //     }
+    //   }
+    // }
+  }
 
   useEffect(() => {
     setSort("price-lowtohigh");
@@ -106,7 +145,7 @@ function ShoppingListing() {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
 
-  console.log(productDetails);
+  // console.log(cartItems, "cartItems");
   return (
     <div className="grid text-left grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
       <ProductFilter filters={filters} handleFilter={handleFilter} />
@@ -149,7 +188,7 @@ function ShoppingListing() {
               <ShoppingProductTile
                 handleGetProductDetails={handleGetProductDetails}
                 product={productItem}
-                // handleAddtoCart={handleAddtoCart}
+                handleAddtoCart={handleAddtoCart}
               />
             ))
           ) : (
