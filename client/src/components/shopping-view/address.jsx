@@ -139,8 +139,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
           formControls={addressFormControls}
           formData={formData}
           setFormData={setFormData}
-          buttonText={"Add"}
-          //   {currentEditedId !== null ? "Edit" : "Add"}
+          buttonText={currentEditedId !== null ? "Edit" : "Add"}
           onSubmit={handleManageAddress}
           isBtnDisabled={!isFormValid()}
         />
