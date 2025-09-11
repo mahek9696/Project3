@@ -5,12 +5,12 @@ import { Label } from "../ui/label";
 import { Separator } from "../ui/separator";
 import { Badge } from "../ui/badge";
 import { useDispatch, useSelector } from "react-redux";
-// import {
-//   getAllOrdersForAdmin,
-//   getOrderDetailsForAdmin,
-//   updateOrderStatus,
-// } from "@/store/admin/order-slice";
-import { toast } from "@/hooks/use-toast";
+import {
+  getAllOrdersForAdmin,
+  getOrderDetailsForAdmin,
+  updateOrderStatus,
+} from "@/store/admin/order-slice";
+import { useToast } from "@/hooks/use-toast";
 
 const initialFormData = {
   status: "",
@@ -18,28 +18,29 @@ const initialFormData = {
 
 function AdminOrderDetailsView({ orderDetails }) {
   const [formData, setFormData] = useState(initialFormData);
-  //   const { user } = useSelector((state) => state.auth);
-  //   const dispatch = useDispatch();
-  //   const { toast } = useToast();
+  const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const { toast } = useToast();
 
-  //   console.log(orderDetails, "orderDetailsorderDetails");
+  // console.log(orderDetails, "orderDetailsorderDetails");
 
   function handleUpdateStatus(event) {
     event.preventDefault();
     const { status } = formData;
 
-    //     dispatch(
-    //       updateOrderStatus({ id: orderDetails?._id, orderStatus: status })
-    //     ).then((data) => {
-    //       if (data?.payload?.success) {
-    //         dispatch(getOrderDetailsForAdmin(orderDetails?._id));
-    //         dispatch(getAllOrdersForAdmin());
-    //         setFormData(initialFormData);
-    //         toast({
-    //           title: data?.payload?.message,
-    //         });
-    //       }
-    //     });
+    dispatch(
+      updateOrderStatus({ id: orderDetails?._id, orderStatus: status })
+    ).then((data) => {
+      console.log(data, "updateOrderStatus");
+      if (data?.payload?.success) {
+        dispatch(getOrderDetailsForAdmin(orderDetails?._id));
+        dispatch(getAllOrdersForAdmin());
+        setFormData(initialFormData);
+        toast({
+          title: data?.payload?.message,
+        });
+      }
+    });
   }
 
   return (
@@ -48,29 +49,29 @@ function AdminOrderDetailsView({ orderDetails }) {
         <div className="grid gap-2">
           <div className="flex mt-6 items-center justify-between">
             <p className="font-medium">Order ID</p>
-            <Label>1232</Label>
-            {/* <Label>{orderDetails?._id}</Label> */}
+            {/* <Label>1232</Label> */}
+            <Label>{orderDetails?._id}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Date</p>
-            {/* <Label>{orderDetails?.orderDate.split("T")[0]}</Label> */}
+            <Label>{orderDetails?.orderDate.split("T")[0]}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Price</p>
-            {/* <Label>${orderDetails?.totalAmount}</Label> */}
+            <Label>${orderDetails?.totalAmount}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Payment method</p>
-            {/* <Label>{orderDetails?.paymentMethod}</Label> */}
+            <Label>{orderDetails?.paymentMethod}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Payment Status</p>
-            {/* <Label>{orderDetails?.paymentStatus}</Label> */}
+            <Label>{orderDetails?.paymentStatus}</Label>
           </div>
           <div className="flex mt-2 items-center justify-between">
             <p className="font-medium">Order Status</p>
             <Label>
-              {/* <Badge
+              <Badge
                 className={`py-1 px-3 ${
                   orderDetails?.orderStatus === "confirmed"
                     ? "bg-green-500"
@@ -80,12 +81,12 @@ function AdminOrderDetailsView({ orderDetails }) {
                 }`}
               >
                 {orderDetails?.orderStatus}
-              </Badge> */}
+              </Badge>
             </Label>
           </div>
         </div>
         <Separator />
-        {/* <div className="grid gap-4">
+        <div className="grid gap-4">
           <div className="grid gap-2">
             <div className="font-medium">Order Details</div>
             <ul className="grid gap-3">
@@ -100,8 +101,8 @@ function AdminOrderDetailsView({ orderDetails }) {
                 : null}
             </ul>
           </div>
-        </div> */}
-        {/* <div className="grid gap-4">
+        </div>
+        <div className="grid gap-4">
           <div className="grid gap-2">
             <div className="font-medium">Shipping Info</div>
             <div className="grid gap-0.5 text-muted-foreground">
@@ -113,7 +114,7 @@ function AdminOrderDetailsView({ orderDetails }) {
               <span>{orderDetails?.addressInfo?.notes}</span>
             </div>
           </div>
-        </div> */}
+        </div>
 
         <div>
           <CommonForm

@@ -4,9 +4,6 @@ const Cart = require("../../models/Cart");
 const Product = require("../../models/Products");
 
 const createOrder = async (req, res) => {
-  // Uncomment this line to disable PayPal temporarily
-  return res.status(501).json({ message: "PayPal is disabled temporarily." });
-
   try {
     const {
       email,
@@ -140,61 +137,61 @@ const capturePayment = async (req, res) => {
   }
 };
 
-// const getAllOrdersByUser = async (req, res) => {
-//   try {
-//     const { email } = req.params;
+const getAllOrdersByUser = async (req, res) => {
+  try {
+    const { email } = req.params;
 
-//     const orders = await Order.find({ email });
+    const orders = await Order.find({ email });
 
-//     if (!orders.length) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "No orders found!",
-//       });
-//     }
+    if (!orders.length) {
+      return res.status(404).json({
+        success: false,
+        message: "No orders found!",
+      });
+    }
 
-//     res.status(200).json({
-//       success: true,
-//       data: orders,
-//     });
-//   } catch (e) {
-//     console.log(e);
-//     res.status(500).json({
-//       success: false,
-//       message: "Some error occured!",
-//     });
-//   }
-// };
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Some error occured!",
+    });
+  }
+};
 
-// const getOrderDetails = async (req, res) => {
-//   try {
-//     const { id } = req.params;
+const getOrderDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-//     const order = await Order.findById(id);
+    const order = await Order.findById(id);
 
-//     if (!order) {
-//       return res.status(404).json({
-//         success: false,
-//         message: "Order not found!",
-//       });
-//     }
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found!",
+      });
+    }
 
-//     res.status(200).json({
-//       success: true,
-//       data: order,
-//     });
-//   } catch (e) {
-//     console.log(e);
-//     res.status(500).json({
-//       success: false,
-//       message: "Some error occured!",
-//     });
-//   }
-// };
+    res.status(200).json({
+      success: true,
+      data: order,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      success: false,
+      message: "Some error occured!",
+    });
+  }
+};
 
 module.exports = {
   createOrder,
   capturePayment,
-  //   getAllOrdersByUser,
-  //   getOrderDetails,
+  getAllOrdersByUser,
+  getOrderDetails,
 };
