@@ -142,6 +142,7 @@ function Address({ setCurrentSelectedAddress, selectedId }) {
           buttonText={currentEditedId !== null ? "Edit" : "Add"}
           onSubmit={handleManageAddress}
           isBtnDisabled={!isFormValid()}
+          setCurrentSelectedAddress={setCurrentSelectedAddress}
         />
       </CardContent>
     </Card>

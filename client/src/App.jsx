@@ -24,6 +24,8 @@ import { checkAuth } from "./store/auth-slice";
 import { useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import loadingGif from "@/assets/JVX7.gif"; // Path to your loading GIF in assets folder
+import PaypalReturnPage from "./pages/shopping-view/paypal-return";
+import PaymentSuccessPage from "./pages/shopping-view/payment-success.jsx";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -93,6 +95,8 @@ function App() {
           <Route path="listing" element={<ShoppingListing />} />
           <Route path="account" element={<ShoppingAccount />} />
           <Route path="checkout" element={<ShoppingCheckout />} />
+          <Route path="paypal-return" element={<PaypalReturnPage />} />
+          <Route path="payment-success" element={<PaymentSuccessPage />} />
         </Route>
 
         <Route path="/unauth-page" element={<UnauthPage />} />
