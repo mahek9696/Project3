@@ -10,40 +10,38 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-
 import { useDispatch, useSelector } from "react-redux";
 // import {
-//   getAllOrdersByUserId,
-//   getOrderDetails,
+//   getAllOrdersForAdmin,
+//   getOrderDetailsForAdmin,
 //   resetOrderDetails,
-// } from "@/store/shop/order-slice";
+// } from "@/store/admin/order-slice";
 import { Badge } from "../ui/badge";
-import ShoppingOrderDetailsView from "./order-details";
-function ShoppingOrders() {
+import AdminOrderDetailsView from "./order-details";
+
+function AdminOrdersView() {
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-  //   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.auth);
-  //   const { orderList, orderDetails } = useSelector((state) => state.shopOrder);
+  // const { orderList, orderDetails } = useSelector((state) => state.adminOrder);
+  // const dispatch = useDispatch();
 
-  //   function handleFetchOrderDetails(getId) {
-  //     dispatch(getOrderDetails(getId));
-  //   }
+  // function handleFetchOrderDetails(getId) {
+  //   dispatch(getOrderDetailsForAdmin(getId));
+  // }
 
-  //   useEffect(() => {
-  //     dispatch(getAllOrdersByUserId(user?.id));
-  //   }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(getAllOrdersForAdmin());
+  // }, [dispatch]);
 
-  //   useEffect(() => {
-  //     if (orderDetails !== null) setOpenDetailsDialog(true);
-  //   }, [orderDetails]);
+  // console.log(orderDetails, "orderList");
 
-  //   console.log(orderDetails, "orderDetails");
+  // useEffect(() => {
+  //   if (orderDetails !== null) setOpenDetailsDialog(true);
+  // }, [orderDetails]);
 
   return (
-    // <div>Order history coming soon...</div>
     <Card>
       <CardHeader>
-        <CardTitle>Order History</CardTitle>
+        <CardTitle>All Orders</CardTitle>
       </CardHeader>
       <CardContent>
         <Table>
@@ -62,50 +60,48 @@ function ShoppingOrders() {
             {/* {orderList && orderList.length > 0
               ? orderList.map((orderItem) => ( */}
             <TableRow>
-              <TableCell>{/* {orderItem?._id} */}1234</TableCell>
+              <TableCell>{/* {orderItem?._id} */}12121</TableCell>
               <TableCell>
-                {/* {orderItem?.orderDate.split("T")[0]} */}11-12-2025
+                {/* {orderItem?.orderDate.split("T")[0]} */}
+                12-12-11
               </TableCell>
               <TableCell>
-                InProcess
                 {/* <Badge
-                className={`py-1 px-3 ${
-                  orderItem?.orderStatus === "confirmed"
-                    ? "bg-green-500"
-                    : orderItem?.orderStatus === "rejected"
-                    ? "bg-red-600"
-                    : "bg-black"
-                }`}
-                >
-                  {orderItem?.orderStatus}
-                </Badge> */}
+                        className={`py-1 px-3 ${
+                          orderItem?.orderStatus === "confirmed"
+                            ? "bg-green-500"
+                            : orderItem?.orderStatus === "rejected"
+                            ? "bg-red-600"
+                            : "bg-black"
+                        }`}
+                      >
+                        {orderItem?.orderStatus}
+                      </Badge> */}
+                InTransist
               </TableCell>
-              <TableCell>{/* ${orderItem?.totalAmount} */}1000</TableCell>
+              <TableCell>{/* ${orderItem?.totalAmount} */}12232</TableCell>
               <TableCell>
                 <Dialog
                   open={openDetailsDialog}
                   onOpenChange={
                     setOpenDetailsDialog
 
-                    // () => {
-                    // setOpenDetailsDialog
+                    //   () => {
+                    //   setOpenDetailsDialog(false);
                     //   dispatch(resetOrderDetails());
                     // }
                   }
                 >
                   <DialogTrigger asChild>
                     <Button
-                      onClick={
-                        () => setOpenDetailsDialog(true)
-                        //     handleFetchOrderDetails(orderItem?._id)
-                      }
+                      onClick={() => setOpenDetailsDialog(true)}
+                      // onClick={() => handleFetchOrderDetails(orderItem?._id)}
                     >
                       View Details
                     </Button>
                   </DialogTrigger>
-                  <ShoppingOrderDetailsView
-                    setOpenDetailsDialog={setOpenDetailsDialog}
-                    // orderDetails={orderDetails}
+                  <AdminOrderDetailsView
+                  // orderDetails={orderDetails}
                   />
                 </Dialog>
               </TableCell>
@@ -119,4 +115,4 @@ function ShoppingOrders() {
   );
 }
 
-export default ShoppingOrders;
+export default AdminOrdersView;

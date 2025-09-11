@@ -41,7 +41,7 @@ function ShoppingHome() {
     (state) => state.shopProducts
   );
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
-  const { user } = useSelector((state) => state.auth);
+  const { user } = useSelector((state) => state.auth) || { user: {} };
   const navigate = useNavigate();
 
   function handleGetProductDetails(getCurrentProductId) {
