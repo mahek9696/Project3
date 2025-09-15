@@ -156,6 +156,11 @@ export const shoppingViewHeaderMenuItems = [
   //   label: "Footwear",
   //   path: "/shop/listing",
   // },
+  {
+    id: "search",
+    label: "Search",
+    path: "/shop/search",
+  },
 ];
 
 export const categoryOptionsMap = {

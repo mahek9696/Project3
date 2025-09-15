@@ -11,7 +11,7 @@ import { ArrowUpDownIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { sortOptions } from "@/config";
-// import { fetchAllProducts } from "@/store/admin/products-slice";
+import { fetchAllProducts } from "@/store/admin/products-slice";
 import {
   fetchAllFilteredProducts,
   fetchProductDetails,
@@ -51,6 +51,8 @@ function ShoppingListing() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [openDetailsDialog, setOpenDetailsDialog] = useState(false);
 
+  const categorySearchParam = searchParams.get("category");
+
   function handleSort(value) {
     // console.log(value);
     setSort(value);
@@ -88,6 +90,25 @@ function ShoppingListing() {
   function handleAddtoCart(getCurrentProductId, getTotalStock) {
     console.log(getCurrentProductId);
 
+    let getCartItems = cartItems.items || [];
+
+    if (getCartItems.length) {
+      const indexOfCurrentItem = getCartItems.findIndex(
+        (item) => item.productId === getCurrentProductId
+      );
+      if (indexOfCurrentItem > -1) {
+        const getQuantity = getCartItems[indexOfCurrentItem].quantity;
+        if (getQuantity + 1 > getTotalStock) {
+          toast({
+            title: `Only ${getQuantity} quantity can be added for this item`,
+            variant: "destructive",
+          });
+
+          return;
+        }
+      }
+    }
+
     dispatch(
       addToCart({
         userId: user?.id,
@@ -101,30 +122,12 @@ function ShoppingListing() {
         });
       }
     });
-    // let getCartItems = cartItems.items || [];
-
-    // if (getCartItems.length) {
-    //   const indexOfCurrentItem = getCartItems.findIndex(
-    //     (item) => item.productId === getCurrentProductId
-    //   );
-    //   if (indexOfCurrentItem > -1) {
-    //     const getQuantity = getCartItems[indexOfCurrentItem].quantity;
-    //     if (getQuantity + 1 > getTotalStock) {
-    //       toast({
-    //         title: `Only ${getQuantity} quantity can be added for this item`,
-    //         variant: "destructive",
-    //       });
-
-    //       return;
-    //     }
-    //   }
-    // }
   }
 
   useEffect(() => {
     setSort("price-lowtohigh");
     setFilters(JSON.parse(sessionStorage.getItem("filters")) || {});
-  }, []);
+  }, [categorySearchParam]);
 
   useEffect(() => {
     if (filters && Object.keys(filters).length > 0) {
@@ -145,7 +148,7 @@ function ShoppingListing() {
     if (productDetails !== null) setOpenDetailsDialog(true);
   }, [productDetails]);
 
-  // console.log(cartItems, "cartItems");
+  console.log(productList, "productList");
   return (
     <div className="grid text-left grid-cols-1 md:grid-cols-[200px_1fr] gap-6 p-4 md:p-6">
       <ProductFilter filters={filters} handleFilter={handleFilter} />

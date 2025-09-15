@@ -12,6 +12,7 @@ const shopCartRouter = require("./routes/shop/cart-routes");
 const shopAddressRouter = require("./routes/shop/address-routes");
 const shopOrderRouter = require("./routes/shop/order-routes");
 const adminOrderRouter = require("./routes/admin/order-routes");
+const shopSearchRouter = require("./routes/shop/search-routes");
 
 //created database - this is the connection string to connect to the MongoDB database which will return a promise
 mongoose
@@ -60,6 +61,7 @@ app.use("/api/shop/products", shopProductsRouter);
 app.use("/api/shop/cart", shopCartRouter);
 app.use("/api/shop/address", shopAddressRouter);
 app.use("/api/shop/order", shopOrderRouter);
+app.use("/api/shop/search", shopSearchRouter);
 
 // /api/auth/registerUser ->registerUser
 // /api/auth/login -> loginUser

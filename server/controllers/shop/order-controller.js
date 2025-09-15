@@ -105,10 +105,12 @@ const capturePayment = async (req, res) => {
         message: "Order can not be found",
       });
     }
+
     order.paymentStatus = "paid";
     order.orderStatus = "confirmed";
     order.paymentId = paymentId;
     order.payerId = payerId;
+
     for (let item of order.cartItems) {
       let product = await Product.findById(item.productId);
       if (!product) {
