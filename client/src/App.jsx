@@ -27,6 +27,7 @@ import loadingGif from "@/assets/JVX7.gif"; // Path to your loading GIF in asset
 import PaypalReturnPage from "./pages/shopping-view/paypal-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success.jsx";
 import ShoppingSearchPage from "./pages/shopping-view/search.jsx";
+import TryOn from "./components/shopping-view/TryOn.jsx";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -99,6 +100,7 @@ function App() {
           <Route path="paypal-return" element={<PaypalReturnPage />} />
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="search" element={<ShoppingSearchPage />} />
+          <Route path="try-on" element={<TryOn />} />
         </Route>
 
         <Route path="/unauth-page" element={<UnauthPage />} />

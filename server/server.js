@@ -63,6 +63,16 @@ app.use("/api/shop/address", shopAddressRouter);
 app.use("/api/shop/order", shopOrderRouter);
 app.use("/api/shop/search", shopSearchRouter);
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
+});
+const upload2 = multer({ storage });
+
+app.post("/upload", upload2.single("photo"), (req, res) => {
+  res.json({ path: `/uploads/${req.file.filename}` });
+});
+
 // /api/auth/registerUser ->registerUser
 // /api/auth/login -> loginUser
 
