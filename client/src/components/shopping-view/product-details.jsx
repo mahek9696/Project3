@@ -278,10 +278,10 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             <div className="mt-10 flex-col flex gap-2">
               <Label>Write a review</Label>
               <div className="flex gap-1">
-                {/* <StarRatingComponent
-                rating={rating}
-                handleRatingChange={handleRatingChange}
-                /> */}
+                <StarRatingComponent
+                  rating={rating}
+                  handleRatingChange={handleRatingChange}
+                  />
               </div>
               <Input
                 // name="reviewMsg"
