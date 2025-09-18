@@ -13,6 +13,7 @@ const shopAddressRouter = require("./routes/shop/address-routes");
 const shopOrderRouter = require("./routes/shop/order-routes");
 const adminOrderRouter = require("./routes/admin/order-routes");
 const shopSearchRouter = require("./routes/shop/search-routes");
+const shopReviewRouter = require("./routes/shop/review-routes");
 
 //created database - this is the connection string to connect to the MongoDB database which will return a promise
 mongoose
@@ -45,6 +46,16 @@ app.use(express.urlencoded({ extended: true }));
 // Multer configuration for handling multipart/form-data
 const upload = multer();
 
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
+});
+const upload2 = multer({ storage });
+
+app.post("/upload", upload2.single("photo"), (req, res) => {
+  res.json({ path: `/uploads/${req.file.filename}` });
+});
+
 // Debug middleware to log incoming requests
 app.use((req, res, next) => {
   console.log("Request Method:", req.method);
@@ -62,16 +73,7 @@ app.use("/api/shop/cart", shopCartRouter);
 app.use("/api/shop/address", shopAddressRouter);
 app.use("/api/shop/order", shopOrderRouter);
 app.use("/api/shop/search", shopSearchRouter);
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, "uploads/"),
-  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
-});
-const upload2 = multer({ storage });
-
-app.post("/upload", upload2.single("photo"), (req, res) => {
-  res.json({ path: `/uploads/${req.file.filename}` });
-});
+app.use("/api/shop/review", shopReviewRouter);
 
 // /api/auth/registerUser ->registerUser
 // /api/auth/login -> loginUser
