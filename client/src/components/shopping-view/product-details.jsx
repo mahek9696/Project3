@@ -13,6 +13,8 @@ import { setProductDetails } from "@/store/shop/products-slice";
 import { useEffect, useState } from "react";
 import StarRatingComponent from "../common/star-rating";
 import { addReview, getReviews } from "@/store/shop/review-slice";
+import { Shirt } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const [reviewMsg, setReviewMsg] = useState("");
@@ -22,6 +24,14 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
   const { cartItems } = useSelector((state) => state.shopCart);
   const { reviews } = useSelector((state) => state.shopReview);
   const { toast } = useToast();
+  const navigate = useNavigate(); // Add this hook
+  // Add the function to handle try-on navigation
+  const handleTryOn = () => {
+    // Close the dialog first
+    setOpen(false);
+    // Navigate to try-on page with product data
+    navigate("/shop/try-on", { state: { product: productDetails } });
+  };
 
   function handleRatingChange(getRating) {
     // console.log(getRating, "getRating");
@@ -154,7 +164,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
               ({averageReview.toFixed(2)})
             </span>
           </div>
-          <div className="mt-5 mb-5">
+          {/* <div className="mt-5 mb-5">
             {productDetails?.totalStock === 0 ? (
               <Button className="w-full opacity-60 cursor-not-allowed">
                 Out of Stock
@@ -170,7 +180,38 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 }
               >
                 Add to Cart
+                </Button>
+               
+            )}
+          </div> */}
+          <div className="mt-5 mb-5 flex gap-2">
+            {productDetails?.totalStock === 0 ? (
+              <Button className="w-full opacity-60 cursor-not-allowed">
+                Out of Stock
               </Button>
+            ) : (
+              <>
+                <Button
+                  className="flex-1"
+                  onClick={() =>
+                    handleAddtoCart(
+                      productDetails?._id,
+                      productDetails?.totalStock
+                    )
+                  }
+                >
+                  Add to Cart
+                </Button>
+                {/* Add the Try On button */}
+                <Button
+                  variant="outline"
+                  onClick={handleTryOn}
+                  className="flex items-center gap-2"
+                >
+                  <Shirt className="h-4 w-4" />
+                  Try On
+                </Button>
+              </>
             )}
           </div>
           <Separator />
