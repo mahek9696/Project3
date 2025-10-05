@@ -27,6 +27,7 @@ import { logoutUser } from "@/store/auth-slice";
 import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
+import logo from "@/assets/gujarat-vidyapith-logo.png";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -144,11 +145,31 @@ function ShoppingHeader() {
   // console.log("User:", user);
   return (
     <header className="sticky top-0 z-40 w-full border-b bg-background">
-      <div className="flex h-16 items-center justify-between px-4 md:px-6">
-        <Link to="/shop/home" className="flex items-center gap-2">
+      <div className="flex h-18 items-center justify-between px-4 md:px-6">
+        {/* <Link to="/shop/home" className="flex items-center gap-2">
           <HousePlug className="h-6 w-6" />
           <span className="font-bold">Ecommerce</span>
-        </Link>
+        </Link> */}
+        <div className="d-flex logo-outer w-20 h-20 justify-content-between align-items-center d-lg-block">
+          <a href="//gujaratvidyapith.org/" className="logo-wrap text-center">
+            <img
+              src={logo}
+              alt="gujarat-vidyapith-logo"
+              width="100"
+              height="100"
+              className="img-fluid mx-auto d-block"
+            />
+          </a>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#main-menu"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+        </div>
+
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline" size="icon" className="lg:hidden">

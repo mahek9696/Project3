@@ -4,6 +4,7 @@ import { Camera as MediaPipeCamera } from "@mediapipe/camera_utils";
 import { Button } from "@/components/ui/button";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Camera as CameraIcon, Share2, ArrowLeft } from "lucide-react";
+import { Label } from "../ui/label";
 
 export default function TryOn() {
   const videoRef = useRef(null);
@@ -12,17 +13,19 @@ export default function TryOn() {
   const navigate = useNavigate();
   const productData = location.state?.product;
   const [cameraStarted, setCameraStarted] = useState(false);
-  // Replace your current image loading code with this:
+
+  // Keep only this line for neckOffset
+  const [neckOffset, setNeckOffset] = useState(0.05);
+
+  // Remove the offsetY line that's causing the error
+
   const [img, setImg] = useState(() => {
-    // Create and return a new image object when component mounts
     const newImg = new Image();
     newImg.crossOrigin = "Anonymous";
-    return newImg; // Return the image object, not just new Image()
+    return newImg;
   });
   const [screenshot, setScreenshot] = useState(null);
   const cameraRef = useRef(null);
-
-  // Use a ref to track if image is ready
   const imageLoadedRef = useRef(false);
 
   // Separate useEffect for image loading
@@ -123,14 +126,22 @@ export default function TryOn() {
       // Debug: Draw a small version of the product image in corner
       canvasCtx.drawImage(img, 10, 10, 50, 70);
 
-      // Only draw the product if we have valid face landmarks
+      // In your onResults function, modify the drawing section:
       if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
         const landmarks = results.multiFaceLandmarks[0];
 
-        // Always use chin for Khadishutra
         const targetLandmark = landmarks[152];
-        const scale = 250; // Larger scale
-        const offsetY = 150; // Move down more
+
+        // Keep the scale large but adjust offsetY based on face size
+        const scale = 200;
+
+        // Adjust offsetY dynamically based on face size
+        // This helps with different face sizes and camera distances
+        const faceHeight =
+          Math.abs(landmarks[10].y - landmarks[152].y) *
+          canvasRef.current.height;
+
+        const offsetY = faceHeight * 0.05; // Proportional to face size
 
         // Calculate position with offsets
         const x = targetLandmark.x * canvasRef.current.width;
@@ -147,9 +158,31 @@ export default function TryOn() {
         canvasCtx.arc(x, y - offsetY, 8, 0, 2 * Math.PI);
         canvasCtx.fill();
 
-        // Draw the product image - this should stay visible
+        // Try with adjusted positioning and forced rendering
         try {
-          canvasCtx.drawImage(img, x - width / 2, y, width, height);
+          // Set global alpha to ensure visibility
+          canvasCtx.globalAlpha = 1.0;
+
+          // Save current transform
+          canvasCtx.save();
+
+          // Center the image horizontally at chin position
+          canvasCtx.translate(x, y);
+
+          // Draw the image centered
+          canvasCtx.drawImage(img, -width / 2, 0, width, height);
+
+          // Restore transform
+          canvasCtx.restore();
+
+          console.log(
+            "Product drawn at:",
+            x,
+            y,
+            "with dimensions:",
+            width,
+            height
+          );
         } catch (err) {
           console.error("Error drawing product:", err);
         }
@@ -196,148 +229,38 @@ export default function TryOn() {
 
     // Cleanup function
     return () => {
+      console.log("Component unmounting - cleaning up camera");
+
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = videoRef.current.srcObject.getTracks();
-        tracks.forEach((track) => track.stop());
+        tracks.forEach((track) => {
+          track.stop();
+          console.log("Cleanup - track stopped:", track.kind);
+        });
+        videoRef.current.srcObject = null;
       }
+
       if (faceMesh) {
         faceMesh.close();
+        console.log("FaceMesh closed");
       }
+
+      if (camera) {
+        // MediaPipe Camera cleanup
+        try {
+          if (camera.video && camera.video.srcObject) {
+            const cameraTracks = camera.video.srcObject.getTracks();
+            cameraTracks.forEach((track) => track.stop());
+          }
+        } catch (err) {
+          console.error("Error in camera cleanup:", err);
+        }
+      }
+
       setCameraStarted(false);
+      console.log("Full cleanup completed");
     };
-  }, [img]); // Only depend on img, not onResults
-  // Setup camera and face mesh
-  // useEffect(() => {
-  //   let faceMesh;
-  //   let camera;
-
-  //   const setupCamera = async () => {
-  //     faceMesh = new FaceMesh({
-  //       locateFile: (file) =>
-  //         `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
-  //     });
-
-  //     faceMesh.setOptions({
-  //       maxNumFaces: 1,
-  //       refineLandmarks: true,
-  //       minDetectionConfidence: 0.5,
-  //       minTrackingConfidence: 0.5,
-  //     });
-
-  //     faceMesh.onResults(onResults);
-
-  //     if (videoRef.current) {
-  //       camera = new MediaPipeCamera(videoRef.current, {
-  //         onFrame: async () => {
-  //           if (faceMesh) {
-  //             await faceMesh.send({ image: videoRef.current });
-  //           }
-  //         },
-  //         width: 640,
-  //         height: 480,
-  //         facingMode: "user",
-  //       });
-
-  //       await camera.start();
-  //       cameraRef.current = camera;
-  //       setCameraStarted(true);
-  //       console.log("Camera started successfully");
-  //     }
-  //   };
-
-  //   setupCamera();
-
-  //   // Cleanup function - critical to stop camera when component unmounts
-  //   return () => {
-  //     console.log("Cleaning up camera and face mesh");
-  //     if (videoRef.current && videoRef.current.srcObject) {
-  //       const tracks = videoRef.current.srcObject.getTracks();
-  //       tracks.forEach((track) => {
-  //         track.stop();
-  //         console.log("Track stopped");
-  //       });
-  //     }
-  //     if (faceMesh) {
-  //       faceMesh.close();
-  //     }
-  //     setCameraStarted(false);
-  //   };
-  // }, []); // Empty dependency array - only run once on mount
-
-  // Use a stable reference to the onResults function
-
-  // Define onResults function
-  // const onResults = (results) => {
-  //   if (!canvasRef.current) return;
-
-  //   const canvasCtx = canvasRef.current.getContext("2d");
-  //   canvasCtx.save();
-  //   canvasCtx.clearRect(
-  //     0,
-  //     0,
-  //     canvasRef.current.width,
-  //     canvasRef.current.height
-  //   );
-
-  //   // Draw user video
-  //   canvasCtx.drawImage(
-  //     results.image,
-  //     0,
-  //     0,
-  //     canvasRef.current.width,
-  //     canvasRef.current.height
-  //   );
-
-  //   // Debug: Draw a small version of the product image in corner to verify it loads
-  //   if (img.complete && img.naturalHeight !== 0) {
-  //     canvasCtx.drawImage(img, 10, 10, 50, 70);
-  //   }
-
-  //   // Only draw the product if we have valid face landmarks and image
-  //   if (
-  //     img.complete &&
-  //     img.naturalHeight !== 0 &&
-  //     results.multiFaceLandmarks &&
-  //     results.multiFaceLandmarks.length > 0
-  //   ) {
-  //     const landmarks = results.multiFaceLandmarks[0];
-
-  //     // IGNORE the category and always use chin for Khadishutra
-  //     // This is the key change - no more category checking
-  //     const targetLandmark = landmarks[152]; // Always use chin
-  //     const scale = 200;
-  //     const offsetY = 100; // Positive value to move down below chin
-
-  //     // Calculate position with offsets
-  //     const x = targetLandmark.x * canvasRef.current.width;
-  //     const y = targetLandmark.y * canvasRef.current.height + offsetY;
-
-  //     // Calculate dimensions preserving aspect ratio
-  //     const imgAspectRatio = img.height / img.width;
-  //     const width = scale;
-  //     const height = scale * imgAspectRatio;
-
-  //     // Console log position for debugging
-  //     console.log("Drawing Khadishutra:", {
-  //       x: x - width / 2,
-  //       y,
-  //       width,
-  //       height,
-  //       landmark: [targetLandmark.x, targetLandmark.y],
-  //     });
-
-  //     // ADD THIS CODE HERE - Draw a dot at the chin landmark
-  //     canvasCtx.fillStyle = "red";
-  //     canvasCtx.beginPath();
-  //     canvasCtx.arc(x, y - offsetY, 8, 0, 2 * Math.PI);
-  //     canvasCtx.fill();
-
-  //     // Draw the product image
-  //     canvasCtx.drawImage(img, x - width / 2, y, width, height);
-  //   }
-
-  //   canvasCtx.restore();
-  // };
+  }, [img, neckOffset]); // Only depend on img, not onResults
 
   const takeScreenshot = useCallback(() => {
     try {
@@ -364,27 +287,6 @@ export default function TryOn() {
       alert("Failed to take screenshot: " + error.message);
     }
   }, []);
-  // Take screenshot function
-  // const takeScreenshot = () => {
-  //   try {
-  //     if (!canvasRef.current) {
-  //       console.error("Canvas reference is null");
-  //       return;
-  //     }
-
-  //     console.log("Taking screenshot...");
-
-  //     // Make sure the canvas is rendered before taking screenshot
-  //     setTimeout(() => {
-  //       const dataURL = canvasRef.current.toDataURL("image/png");
-  //       console.log("Screenshot captured");
-  //       setScreenshot(dataURL);
-  //     }, 100);
-  //   } catch (error) {
-  //     console.error("Error taking screenshot:", error);
-  //     alert("Failed to take screenshot: " + error.message);
-  //   }
-  // };
 
   // Share screenshot function
   const shareScreenshot = () => {
@@ -430,15 +332,37 @@ export default function TryOn() {
 
   // Handle navigation back
   const handleBack = () => {
-    // Make sure to stop the camera before navigating away
+    console.log("Cleaning up camera before navigation...");
+
+    // Stop all video tracks
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
-      tracks.forEach((track) => track.stop());
+      tracks.forEach((track) => {
+        track.stop();
+        console.log("Video track stopped:", track.kind);
+      });
+      videoRef.current.srcObject = null; // Clear the video source
     }
+
+    // Stop the MediaPipe camera if it exists
     if (cameraRef.current) {
-      cameraRef.current.stop();
+      try {
+        // MediaPipe camera doesn't have a stop method, so we stop the video tracks instead
+        if (cameraRef.current.video && cameraRef.current.video.srcObject) {
+          const cameraTracks = cameraRef.current.video.srcObject.getTracks();
+          cameraTracks.forEach((track) => {
+            track.stop();
+            console.log("Camera track stopped:", track.kind);
+          });
+        }
+      } catch (err) {
+        console.error("Error stopping MediaPipe camera:", err);
+      }
+      cameraRef.current = null;
     }
+
     setCameraStarted(false);
+    console.log("Camera cleanup completed");
     navigate(-1);
   };
 
@@ -497,10 +421,25 @@ export default function TryOn() {
             }}
           />
         </div>
+        {/* // And add a control slider below your canvas: */}
+        <div className="mt-2 mb-2">
+          <Label className="block text-sm font-medium text-gray-700">
+            Fine-tune position: {Math.round(neckOffset * 100)}%
+          </Label>
+          <input
+            type="range"
+            min="0"
+            max="0.2"
+            step="0.01"
+            value={neckOffset}
+            onChange={(e) => setNeckOffset(parseFloat(e.target.value))}
+            className="w-full"
+          />
+        </div>
         {/* Add this button to force redraw the product */}
         <Button
           onClick={() => {
-            if (!canvasRef.current || !imageLoadedRef.current) {
+            if (!canvasRef.current || !img.complete) {
               alert("Canvas or image not ready");
               return;
             }
@@ -517,20 +456,25 @@ export default function TryOn() {
               canvasRef.current.height
             );
 
-            // Draw product at a fixed position if needed
-            const x = canvasRef.current.width / 2;
-            const y = canvasRef.current.height * 0.7; // Lower part of screen
+            // Calculate image dimensions
             const scale = 250;
             const width = scale;
             const height = scale * (img.height / img.width);
 
+            // Position in lower third of screen, centered horizontally
+            const x = canvasRef.current.width / 2;
+            const y = canvasRef.current.height * 0.55; // Position at 55% down the screen
+
+            // Draw image centered horizontally at the position
             ctx.drawImage(img, x - width / 2, y, width, height);
-            console.log("Manual product redraw completed");
+
+            console.log("Manual product placement at:", x - width / 2, y);
           }}
-          className="ml-2 bg-red-600 hover:bg-red-700 text-white"
+          className="w-full mb-4 bg-red-600 hover:bg-red-700 text-white"
         >
           Fix Product Position
         </Button>
+
         {/* Buttons */}
         <div className="mt-4 flex justify-center gap-4 mb-4">
           <Button
