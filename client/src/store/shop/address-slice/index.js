@@ -10,7 +10,7 @@ export const addNewAddress = createAsyncThunk(
   "/addresses/addNewAddress",
   async (formData) => {
     const response = await axios.post(
-      "http://localhost:5000/api/shop/address/add",
+      "http://localhost:4000/api/shop/address/add",
       formData
     );
 
@@ -22,7 +22,7 @@ export const fetchAllAddresses = createAsyncThunk(
   "/addresses/fetchAllAddresses",
   async (email) => {
     const response = await axios.get(
-      `http://localhost:5000/api/shop/address/get/${email}`
+      `http://localhost:4000/api/shop/address/get/${email}`
     );
 
     return response.data;
@@ -33,7 +33,7 @@ export const editaAddress = createAsyncThunk(
   "/addresses/editaAddress",
   async ({ email, addressId, formData }) => {
     const response = await axios.put(
-      `http://localhost:5000/api/shop/address/update/${email}/${addressId}`,
+      `http://localhost:4000/api/shop/address/update/${email}/${addressId}`,
       formData
     );
 
@@ -45,7 +45,7 @@ export const deleteAddress = createAsyncThunk(
   "/addresses/deleteAddress",
   async ({ email, addressId }) => {
     const response = await axios.delete(
-      `http://localhost:5000/api/shop/address/delete/${email}/${addressId}`
+      `http://localhost:4000/api/shop/address/delete/${email}/${addressId}`
     );
 
     return response.data;

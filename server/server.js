@@ -22,7 +22,7 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 // then we create an app which - invoking the express(server) function
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 //this app will give so properties to the express app -  which are
 app.use(
   cors({
