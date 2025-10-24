@@ -11,6 +11,7 @@ const SMOOTHING_WINDOW = 4;
 export default function TryOn() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const guideCanvasRef = useRef(null); // Overlay canvas for body template
   const location = useLocation();
   const navigate = useNavigate();
   const productData = location.state?.product;
@@ -58,9 +59,126 @@ export default function TryOn() {
     };
   }, [productData, img]);
 
+  // Draw body template guide overlay
+  const drawBodyTemplate = useCallback(() => {
+    if (!guideCanvasRef.current || capturedPhoto) return;
+
+    const canvas = guideCanvasRef.current;
+    const ctx = canvas.getContext("2d");
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+
+    // Head (oval)
+    const headWidth = 120;
+    const headHeight = 160;
+    const headY = centerY - 180;
+
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.ellipse(
+      centerX,
+      headY,
+      headWidth / 2,
+      headHeight / 2,
+      0,
+      0,
+      2 * Math.PI
+    );
+    ctx.stroke();
+
+    // Neck (highlighted/colored - yellow/gold)
+    const neckWidth = 80;
+    const neckHeight = 60;
+    const neckY = headY + headHeight / 2;
+
+    ctx.fillStyle = "#D4AF37"; // Gold color for neck
+    ctx.beginPath();
+    // Create trapezoid shape for neck
+    ctx.moveTo(centerX - neckWidth / 2, neckY);
+    ctx.lineTo(centerX + neckWidth / 2, neckY);
+    ctx.lineTo(centerX + neckWidth / 1.5, neckY + neckHeight);
+    ctx.lineTo(centerX - neckWidth / 1.5, neckY + neckHeight);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Shoulders (curved lines)
+    const shoulderY = neckY + neckHeight;
+    const shoulderWidth = 260;
+
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    // Left shoulder curve
+    ctx.moveTo(centerX - neckWidth / 1.5, shoulderY);
+    ctx.quadraticCurveTo(
+      centerX - shoulderWidth / 2,
+      shoulderY + 20,
+      centerX - shoulderWidth / 2,
+      shoulderY + 60
+    );
+    // Right shoulder curve
+    ctx.moveTo(centerX + neckWidth / 1.5, shoulderY);
+    ctx.quadraticCurveTo(
+      centerX + shoulderWidth / 2,
+      shoulderY + 20,
+      centerX + shoulderWidth / 2,
+      shoulderY + 60
+    );
+    ctx.stroke();
+
+    // Upper body/chest (outline)
+    const chestWidth = 240;
+    const chestHeight = 140;
+    const chestY = shoulderY + 60;
+
+    ctx.beginPath();
+    // Left side
+    ctx.moveTo(centerX - shoulderWidth / 2, chestY);
+    ctx.lineTo(centerX - chestWidth / 2, chestY + chestHeight);
+    // Right side
+    ctx.moveTo(centerX + shoulderWidth / 2, chestY);
+    ctx.lineTo(centerX + chestWidth / 2, chestY + chestHeight);
+    // Bottom curve (chest bottom)
+    ctx.moveTo(centerX - chestWidth / 2, chestY + chestHeight);
+    ctx.quadraticCurveTo(
+      centerX,
+      chestY + chestHeight + 20,
+      centerX + chestWidth / 2,
+      chestY + chestHeight
+    );
+    ctx.stroke();
+
+    // Add instruction text
+    ctx.fillStyle = "#FFFFFF";
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 3;
+    ctx.font = "bold 20px Arial";
+    ctx.textAlign = "center";
+
+    ctx.strokeText("Align your body with the template", centerX, 40);
+    ctx.fillText("Align your body with the template", centerX, 40);
+
+    ctx.font = "16px Arial";
+    ctx.strokeText(
+      "Product will be placed on highlighted neck area",
+      centerX,
+      65
+    );
+    ctx.fillText(
+      "Product will be placed on highlighted neck area",
+      centerX,
+      65
+    );
+  }, [capturedPhoto]);
+
   // Setup camera only when no photo is captured
   useEffect(() => {
-    if (capturedPhoto) return; // Don't start camera if photo already captured
+    if (capturedPhoto) return;
 
     let faceMesh;
     let camera;
@@ -77,7 +195,7 @@ export default function TryOn() {
         canvasRef.current.height
       );
 
-      // Just show live camera feed
+      // Show live camera feed
       canvasCtx.drawImage(
         results.image,
         0,
@@ -87,6 +205,9 @@ export default function TryOn() {
       );
 
       canvasCtx.restore();
+
+      // Draw body template overlay
+      drawBodyTemplate();
     };
 
     const setupCamera = async () => {
@@ -149,7 +270,7 @@ export default function TryOn() {
 
       setCameraStarted(false);
     };
-  }, [capturedPhoto]);
+  }, [capturedPhoto, drawBodyTemplate]);
 
   // Step 1: Capture photo
   const capturePhoto = useCallback(() => {
@@ -192,7 +313,6 @@ export default function TryOn() {
       const capturedImg = new Image();
       capturedImg.crossOrigin = "Anonymous";
 
-      // Wait for image to load
       await new Promise((resolve, reject) => {
         capturedImg.onload = resolve;
         capturedImg.onerror = reject;
@@ -204,7 +324,6 @@ export default function TryOn() {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext("2d");
 
-      // Create a new FaceMesh instance for processing static image
       const staticFaceMesh = new FaceMesh({
         locateFile: (file) =>
           `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
@@ -219,7 +338,6 @@ export default function TryOn() {
 
       console.log("FaceMesh initialized for static image");
 
-      // Process the image
       const detectionResult = await new Promise((resolve, reject) => {
         const timeout = setTimeout(() => {
           reject(new Error("Face detection timeout"));
@@ -234,7 +352,6 @@ export default function TryOn() {
         staticFaceMesh.send({ image: capturedImg }).catch(reject);
       });
 
-      // Close the static FaceMesh instance
       staticFaceMesh.close();
 
       if (
@@ -253,7 +370,6 @@ export default function TryOn() {
 
       const detectedLandmarks = detectionResult.multiFaceLandmarks[0];
 
-      // Draw captured photo first
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(capturedImg, 0, 0, canvas.width, canvas.height);
 
@@ -328,14 +444,12 @@ export default function TryOn() {
     }
   }, [capturedPhoto, img, neckOffset, scaleMultiplier]);
 
-  // Retake photo
   const retakePhoto = useCallback(() => {
     setCapturedPhoto(null);
     setFinalResult(null);
     setIsProcessing(false);
   }, []);
 
-  // Share/Download final result
   const shareResult = () => {
     if (!finalResult) {
       alert("No result to share");
@@ -414,7 +528,7 @@ export default function TryOn() {
               <h3 className="font-medium">{productData.title}</h3>
               <p className="text-sm text-gray-500">
                 {!capturedPhoto
-                  ? "Position camera from face to chest"
+                  ? "Align your body with the template"
                   : !finalResult
                   ? "Adjust settings and apply product"
                   : "Final result ready!"}
@@ -423,25 +537,35 @@ export default function TryOn() {
           </div>
         )}
 
-        {/* Canvas */}
-        <div className="overflow-hidden rounded-lg border-2 border-gray-400 shadow-lg mx-auto mb-4">
+        {/* Canvas with body template overlay */}
+        <div className="relative overflow-hidden rounded-lg border-2 border-gray-400 shadow-lg mx-auto mb-4">
           <video
             ref={videoRef}
             className="hidden"
             playsInline
-            width="740"
-            height="580"
+            width="640"
+            height="480"
           ></video>
           <canvas
             ref={canvasRef}
-            width={740}
-            height={580}
+            width={640}
+            height={480}
             className="mx-auto object-cover"
             style={{ maxWidth: "100%", height: "auto" }}
           />
+          {/* Body template overlay - only show when camera is active */}
+          {!capturedPhoto && (
+            <canvas
+              ref={guideCanvasRef}
+              width={640}
+              height={480}
+              className="absolute top-7 left-7 mx-auto object-cover pointer-events-none"
+              style={{ maxWidth: "100%", height: "auto" }}
+            />
+          )}
         </div>
 
-        {/* Controls - show only if photo captured but not yet applied */}
+        {/* Controls */}
         {capturedPhoto && !finalResult && (
           <div className="space-y-4 mb-4 p-4 bg-white rounded-lg shadow">
             <div>
@@ -526,7 +650,7 @@ export default function TryOn() {
           )}
         </div>
 
-        {/* Final Result Display */}
+        {/* Final Result */}
         {finalResult && (
           <div className="mt-4 p-4 bg-white rounded-lg shadow">
             <h3 className="text-center font-medium mb-3">Final Result</h3>
