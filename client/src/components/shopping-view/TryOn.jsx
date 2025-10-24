@@ -6,96 +6,65 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Camera as CameraIcon, Share2, ArrowLeft } from "lucide-react";
 import { Label } from "../ui/label";
 
+const SMOOTHING_WINDOW = 4;
+
 export default function TryOn() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const location = useLocation();
   const navigate = useNavigate();
   const productData = location.state?.product;
+
   const [cameraStarted, setCameraStarted] = useState(false);
+  const [capturedPhoto, setCapturedPhoto] = useState(null);
+  const [finalResult, setFinalResult] = useState(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  // Keep only this line for neckOffset
   const [neckOffset, setNeckOffset] = useState(0.05);
-
-  // Remove the offsetY line that's causing the error
+  const [scaleMultiplier, setScaleMultiplier] = useState(2.2);
 
   const [img, setImg] = useState(() => {
     const newImg = new Image();
     newImg.crossOrigin = "Anonymous";
     return newImg;
   });
-  const [screenshot, setScreenshot] = useState(null);
+
   const cameraRef = useRef(null);
   const imageLoadedRef = useRef(false);
+  const faceMeshRef = useRef(null);
 
-  // Separate useEffect for image loading
+  // Load product image
   useEffect(() => {
     if (!productData?.image) {
-      console.error("No product image found in product data");
+      console.error("No product image found");
       return;
     }
 
-    console.log("Loading image from:", productData.image);
-
-    // Set up event handlers
     img.onload = () => {
-      console.log("Image loaded successfully:", img.width, "x", img.height);
-      imageLoadedRef.current = true; // Mark image as loaded
+      console.log("Product image loaded:", img.width, "x", img.height);
+      imageLoadedRef.current = true;
     };
 
     img.onerror = (error) => {
-      console.error("Error loading image:", error);
+      console.error("Error loading product image:", error);
       imageLoadedRef.current = false;
-      alert("Failed to load product image. Please try a different product.");
+      alert("Failed to load product image");
     };
 
-    // Set src - this will trigger the load
     img.src = productData.image;
 
-    // Cleanup
     return () => {
       imageLoadedRef.current = false;
     };
   }, [productData, img]);
 
-  // Load product image
-  // useEffect(() => {
-  //   console.log("Product data received:", productData);
-  //   if (productData?.image) {
-  //     console.log("Loading image from:", productData.image);
-  //     const newImg = new Image();
-
-  //     // Add crossOrigin if your images are from different domains
-  //     newImg.crossOrigin = "Anonymous";
-
-  //     newImg.src = productData.image;
-
-  //     newImg.onload = () => {
-  //       console.log(
-  //         "Image loaded successfully, dimensions:",
-  //         newImg.width,
-  //         "x",
-  //         newImg.height
-  //       );
-  //       setImg(newImg);
-  //     };
-
-  //     newImg.onerror = (error) => {
-  //       console.error("Error loading image:", error);
-  //       alert("Failed to load product image. Please try a different product.");
-  //     };
-  //   } else {
-  //     console.error("No product image found in product data");
-  //   }
-  // }, [productData]);
-
-  // Then update your camera setup useEffect:
-  // 1. Move onResults inside the camera useEffect
+  // Setup camera only when no photo is captured
   useEffect(() => {
+    if (capturedPhoto) return; // Don't start camera if photo already captured
+
     let faceMesh;
     let camera;
 
-    // Define onResults inside this effect so it has access to latest state
     const onResults = (results) => {
       if (!canvasRef.current) return;
 
@@ -108,7 +77,7 @@ export default function TryOn() {
         canvasRef.current.height
       );
 
-      // Draw user video
+      // Just show live camera feed
       canvasCtx.drawImage(
         results.image,
         0,
@@ -116,77 +85,6 @@ export default function TryOn() {
         canvasRef.current.width,
         canvasRef.current.height
       );
-
-      // Check if image is fully loaded using the ref
-      if (!imageLoadedRef.current) {
-        canvasCtx.restore();
-        return;
-      }
-
-      // Debug: Draw a small version of the product image in corner
-      canvasCtx.drawImage(img, 10, 10, 50, 70);
-
-      // In your onResults function, modify the drawing section:
-      if (results.multiFaceLandmarks && results.multiFaceLandmarks.length > 0) {
-        const landmarks = results.multiFaceLandmarks[0];
-
-        const targetLandmark = landmarks[152];
-
-        // Keep the scale large but adjust offsetY based on face size
-        const scale = 200;
-
-        // Adjust offsetY dynamically based on face size
-        // This helps with different face sizes and camera distances
-        const faceHeight =
-          Math.abs(landmarks[10].y - landmarks[152].y) *
-          canvasRef.current.height;
-
-        const offsetY = faceHeight * 0.05; // Proportional to face size
-
-        // Calculate position with offsets
-        const x = targetLandmark.x * canvasRef.current.width;
-        const y = targetLandmark.y * canvasRef.current.height + offsetY;
-
-        // Calculate dimensions preserving aspect ratio
-        const imgAspectRatio = img.height / img.width;
-        const width = scale;
-        const height = scale * imgAspectRatio;
-
-        // Draw a dot at the chin landmark
-        canvasCtx.fillStyle = "red";
-        canvasCtx.beginPath();
-        canvasCtx.arc(x, y - offsetY, 8, 0, 2 * Math.PI);
-        canvasCtx.fill();
-
-        // Try with adjusted positioning and forced rendering
-        try {
-          // Set global alpha to ensure visibility
-          canvasCtx.globalAlpha = 1.0;
-
-          // Save current transform
-          canvasCtx.save();
-
-          // Center the image horizontally at chin position
-          canvasCtx.translate(x, y);
-
-          // Draw the image centered
-          canvasCtx.drawImage(img, -width / 2, 0, width, height);
-
-          // Restore transform
-          canvasCtx.restore();
-
-          console.log(
-            "Product drawn at:",
-            x,
-            y,
-            "with dimensions:",
-            width,
-            height
-          );
-        } catch (err) {
-          console.error("Error drawing product:", err);
-        }
-      }
 
       canvasCtx.restore();
     };
@@ -204,8 +102,8 @@ export default function TryOn() {
         minTrackingConfidence: 0.5,
       });
 
-      // Use the locally defined onResults
       faceMesh.onResults(onResults);
+      faceMeshRef.current = faceMesh;
 
       if (videoRef.current) {
         camera = new MediaPipeCamera(videoRef.current, {
@@ -227,26 +125,18 @@ export default function TryOn() {
 
     setupCamera();
 
-    // Cleanup function
     return () => {
-      console.log("Component unmounting - cleaning up camera");
-
       if (videoRef.current && videoRef.current.srcObject) {
         const tracks = videoRef.current.srcObject.getTracks();
-        tracks.forEach((track) => {
-          track.stop();
-          console.log("Cleanup - track stopped:", track.kind);
-        });
+        tracks.forEach((track) => track.stop());
         videoRef.current.srcObject = null;
       }
 
       if (faceMesh) {
         faceMesh.close();
-        console.log("FaceMesh closed");
       }
 
       if (camera) {
-        // MediaPipe Camera cleanup
         try {
           if (camera.video && camera.video.srcObject) {
             const cameraTracks = camera.video.srcObject.getTracks();
@@ -258,111 +148,243 @@ export default function TryOn() {
       }
 
       setCameraStarted(false);
-      console.log("Full cleanup completed");
     };
-  }, [img, neckOffset]); // Only depend on img, not onResults
+  }, [capturedPhoto]);
 
-  const takeScreenshot = useCallback(() => {
+  // Step 1: Capture photo
+  const capturePhoto = useCallback(() => {
+    if (!canvasRef.current) {
+      alert("Canvas not ready");
+      return;
+    }
+
+    const dataURL = canvasRef.current.toDataURL("image/png");
+    setCapturedPhoto(dataURL);
+
+    // Stop camera
+    if (videoRef.current && videoRef.current.srcObject) {
+      const tracks = videoRef.current.srcObject.getTracks();
+      tracks.forEach((track) => track.stop());
+    }
+    if (cameraRef.current) {
+      try {
+        if (cameraRef.current.video && cameraRef.current.video.srcObject) {
+          const cameraTracks = cameraRef.current.video.srcObject.getTracks();
+          cameraTracks.forEach((track) => track.stop());
+        }
+      } catch (err) {
+        console.error("Error stopping camera:", err);
+      }
+    }
+    setCameraStarted(false);
+  }, []);
+
+  // Step 2: Apply product to captured photo
+  const applyProduct = useCallback(async () => {
+    if (!capturedPhoto || !imageLoadedRef.current) {
+      alert("Photo or product not ready");
+      return;
+    }
+
+    setIsProcessing(true);
+
     try {
-      if (!canvasRef.current) {
-        console.error("Canvas reference is null");
-        alert("Cannot take screenshot - canvas not found");
+      const capturedImg = new Image();
+      capturedImg.crossOrigin = "Anonymous";
+
+      // Wait for image to load
+      await new Promise((resolve, reject) => {
+        capturedImg.onload = resolve;
+        capturedImg.onerror = reject;
+        capturedImg.src = capturedPhoto;
+      });
+
+      console.log("Captured image loaded successfully");
+
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+
+      // Create a new FaceMesh instance for processing static image
+      const staticFaceMesh = new FaceMesh({
+        locateFile: (file) =>
+          `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`,
+      });
+
+      staticFaceMesh.setOptions({
+        maxNumFaces: 1,
+        refineLandmarks: true,
+        minDetectionConfidence: 0.5,
+        minTrackingConfidence: 0.5,
+      });
+
+      console.log("FaceMesh initialized for static image");
+
+      // Process the image
+      const detectionResult = await new Promise((resolve, reject) => {
+        const timeout = setTimeout(() => {
+          reject(new Error("Face detection timeout"));
+        }, 5000);
+
+        staticFaceMesh.onResults((results) => {
+          clearTimeout(timeout);
+          console.log("Face detection results received:", results);
+          resolve(results);
+        });
+
+        staticFaceMesh.send({ image: capturedImg }).catch(reject);
+      });
+
+      // Close the static FaceMesh instance
+      staticFaceMesh.close();
+
+      if (
+        !detectionResult.multiFaceLandmarks ||
+        detectionResult.multiFaceLandmarks.length === 0
+      ) {
+        console.error("No face landmarks detected");
+        alert(
+          "No face detected in the photo. Please ensure your face is clearly visible and try again."
+        );
+        setIsProcessing(false);
         return;
       }
 
-      console.log("Taking screenshot...");
+      console.log("Face detected successfully");
 
-      // Take screenshot immediately without setTimeout
-      try {
-        const dataURL = canvasRef.current.toDataURL("image/png");
-        console.log("Screenshot captured successfully");
-        setScreenshot(dataURL);
-        alert("Screenshot taken! Scroll down to see your image.");
-      } catch (err) {
-        console.error("Error capturing canvas:", err);
-        alert("Failed to capture screenshot: " + err.message);
-      }
-    } catch (error) {
-      console.error("Error taking screenshot:", error);
-      alert("Failed to take screenshot: " + error.message);
+      const detectedLandmarks = detectionResult.multiFaceLandmarks[0];
+
+      // Draw captured photo first
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(capturedImg, 0, 0, canvas.width, canvas.height);
+
+      // Get key landmarks
+      const leftEye = detectedLandmarks[33];
+      const rightEye = detectedLandmarks[263];
+      const chin = detectedLandmarks[152];
+      const forehead = detectedLandmarks[10];
+
+      console.log(
+        "Landmarks - chin:",
+        chin,
+        "leftEye:",
+        leftEye,
+        "rightEye:",
+        rightEye
+      );
+
+      // Calculate scale based on eye distance
+      const eyeDistance = Math.sqrt(
+        Math.pow((rightEye.x - leftEye.x) * canvas.width, 2) +
+          Math.pow((rightEye.y - leftEye.y) * canvas.height, 2)
+      );
+
+      const baseScale = eyeDistance * scaleMultiplier;
+      const imgAspectRatio = img.height / img.width;
+      const width = baseScale;
+      const height = baseScale * imgAspectRatio;
+
+      console.log("Product dimensions - width:", width, "height:", height);
+
+      // Calculate position - place at neck (below chin)
+      const faceHeight = Math.abs(forehead.y - chin.y) * canvas.height;
+      const dynamicOffset = faceHeight * neckOffset;
+
+      const x = chin.x * canvas.width;
+      const y = chin.y * canvas.height + dynamicOffset;
+
+      console.log(
+        "Product position - x:",
+        x,
+        "y:",
+        y,
+        "offset:",
+        dynamicOffset
+      );
+
+      // Calculate rotation based on eye alignment
+      const dx = rightEye.x - leftEye.x;
+      const dy = rightEye.y - leftEye.y;
+      const angle = Math.atan2(dy, dx);
+
+      console.log("Rotation angle:", angle * (180 / Math.PI), "degrees");
+
+      // Draw product on captured photo
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(angle);
+      ctx.drawImage(img, -width / 2, 0, width, height);
+      ctx.restore();
+
+      // Save final result
+      const finalDataURL = canvas.toDataURL("image/png");
+      setFinalResult(finalDataURL);
+      setIsProcessing(false);
+
+      console.log("Product applied successfully!");
+    } catch (err) {
+      console.error("Error applying product:", err);
+      alert(`Failed to apply product: ${err.message}. Please try again.`);
+      setIsProcessing(false);
     }
+  }, [capturedPhoto, img, neckOffset, scaleMultiplier]);
+
+  // Retake photo
+  const retakePhoto = useCallback(() => {
+    setCapturedPhoto(null);
+    setFinalResult(null);
+    setIsProcessing(false);
   }, []);
 
-  // Share screenshot function
-  const shareScreenshot = () => {
-    if (!screenshot) {
-      alert("No screenshot to share");
+  // Share/Download final result
+  const shareResult = () => {
+    if (!finalResult) {
+      alert("No result to share");
       return;
     }
 
     if (navigator.share) {
-      // Convert data URL to file
-      fetch(screenshot)
+      fetch(finalResult)
         .then((res) => res.blob())
         .then((blob) => {
-          const file = new File([blob], "try-on.png", { type: "image/png" });
-
+          const file = new File([blob], "try-on-result.png", {
+            type: "image/png",
+          });
           navigator
             .share({
-              title: `${productData?.title || "Product"} Virtual Try-On`,
-              text: "Check out how this looks on me!",
+              title: `${productData?.title || "Product"} Try-On`,
+              text: "Check out how this looks!",
               files: [file],
             })
-            .catch((error) => {
-              console.log("Error sharing:", error);
-              downloadScreenshot(); // Fallback to download
-            });
+            .catch(() => downloadResult());
         })
-        .catch((error) => {
-          console.error("Error preparing file:", error);
-          downloadScreenshot(); // Fallback to download
-        });
+        .catch(() => downloadResult());
     } else {
-      downloadScreenshot();
+      downloadResult();
     }
   };
 
-  // Download screenshot helper function
-  const downloadScreenshot = () => {
+  const downloadResult = () => {
     const link = document.createElement("a");
-    link.download = "try-on.png";
-    link.href = screenshot;
+    link.download = "try-on-result.png";
+    link.href = finalResult;
     link.click();
   };
 
-  // Handle navigation back
   const handleBack = () => {
-    console.log("Cleaning up camera before navigation...");
-
-    // Stop all video tracks
     if (videoRef.current && videoRef.current.srcObject) {
       const tracks = videoRef.current.srcObject.getTracks();
-      tracks.forEach((track) => {
-        track.stop();
-        console.log("Video track stopped:", track.kind);
-      });
-      videoRef.current.srcObject = null; // Clear the video source
+      tracks.forEach((track) => track.stop());
     }
-
-    // Stop the MediaPipe camera if it exists
     if (cameraRef.current) {
       try {
-        // MediaPipe camera doesn't have a stop method, so we stop the video tracks instead
         if (cameraRef.current.video && cameraRef.current.video.srcObject) {
           const cameraTracks = cameraRef.current.video.srcObject.getTracks();
-          cameraTracks.forEach((track) => {
-            track.stop();
-            console.log("Camera track stopped:", track.kind);
-          });
+          cameraTracks.forEach((track) => track.stop());
         }
       } catch (err) {
-        console.error("Error stopping MediaPipe camera:", err);
+        console.error("Error stopping camera:", err);
       }
-      cameraRef.current = null;
     }
-
-    setCameraStarted(false);
-    console.log("Camera cleanup completed");
     navigate(-1);
   };
 
@@ -376,11 +398,12 @@ export default function TryOn() {
             className="flex items-center gap-2"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Product
+            Back
           </Button>
           <h2 className="text-2xl font-bold">Virtual Try On</h2>
         </div>
-        {productData ? (
+
+        {productData && (
           <div className="mb-4 p-3 bg-white rounded-lg shadow flex items-center gap-4">
             <img
               src={productData.image}
@@ -390,118 +413,127 @@ export default function TryOn() {
             <div>
               <h3 className="font-medium">{productData.title}</h3>
               <p className="text-sm text-gray-500">
-                Position your face to try on this product
+                {!capturedPhoto
+                  ? "Position camera from face to chest"
+                  : !finalResult
+                  ? "Adjust settings and apply product"
+                  : "Final result ready!"}
               </p>
             </div>
           </div>
-        ) : (
-          <div className="mb-4 p-3 bg-yellow-100 rounded-lg">
-            <p className="text-yellow-700">
-              No product selected. Please select a product to try on.
-            </p>
-          </div>
         )}
-        {/* Canvas container */}
+
+        {/* Canvas */}
         <div className="overflow-hidden rounded-lg border-2 border-gray-400 shadow-lg mx-auto mb-4">
           <video
             ref={videoRef}
             className="hidden"
             playsInline
-            width="640"
-            height="480"
+            width="740"
+            height="580"
           ></video>
           <canvas
             ref={canvasRef}
-            width={640}
-            height={480}
+            width={740}
+            height={580}
             className="mx-auto object-cover"
-            style={{
-              maxWidth: "100%",
-              height: "auto",
-            }}
+            style={{ maxWidth: "100%", height: "auto" }}
           />
         </div>
-        {/* // And add a control slider below your canvas: */}
-        <div className="mt-2 mb-2">
-          <Label className="block text-sm font-medium text-gray-700">
-            Fine-tune position: {Math.round(neckOffset * 100)}%
-          </Label>
-          <input
-            type="range"
-            min="0"
-            max="0.2"
-            step="0.01"
-            value={neckOffset}
-            onChange={(e) => setNeckOffset(parseFloat(e.target.value))}
-            className="w-full"
-          />
-        </div>
-        {/* Add this button to force redraw the product */}
-        <Button
-          onClick={() => {
-            if (!canvasRef.current || !img.complete) {
-              alert("Canvas or image not ready");
-              return;
-            }
 
-            const ctx = canvasRef.current.getContext("2d");
-            const video = videoRef.current;
+        {/* Controls - show only if photo captured but not yet applied */}
+        {capturedPhoto && !finalResult && (
+          <div className="space-y-4 mb-4 p-4 bg-white rounded-lg shadow">
+            <div>
+              <Label className="block text-sm font-medium text-gray-700 mb-2">
+                Position: {Math.round(neckOffset * 100)}%
+              </Label>
+              <input
+                type="range"
+                min="0"
+                max="0.2"
+                step="0.01"
+                value={neckOffset}
+                onChange={(e) => setNeckOffset(parseFloat(e.target.value))}
+                className="w-full"
+              />
+            </div>
 
-            // Redraw the video frame
-            ctx.drawImage(
-              video,
-              0,
-              0,
-              canvasRef.current.width,
-              canvasRef.current.height
-            );
-
-            // Calculate image dimensions
-            const scale = 250;
-            const width = scale;
-            const height = scale * (img.height / img.width);
-
-            // Position in lower third of screen, centered horizontally
-            const x = canvasRef.current.width / 2;
-            const y = canvasRef.current.height * 0.55; // Position at 55% down the screen
-
-            // Draw image centered horizontally at the position
-            ctx.drawImage(img, x - width / 2, y, width, height);
-
-            console.log("Manual product placement at:", x - width / 2, y);
-          }}
-          className="w-full mb-4 bg-red-600 hover:bg-red-700 text-white"
-        >
-          Fix Product Position
-        </Button>
+            <div>
+              <Label className="block text-sm font-medium text-gray-700 mb-2">
+                Scale: {scaleMultiplier.toFixed(1)}x
+              </Label>
+              <input
+                type="range"
+                min="1.0"
+                max="4.0"
+                step="0.1"
+                value={scaleMultiplier}
+                onChange={(e) => setScaleMultiplier(parseFloat(e.target.value))}
+                className="w-full"
+              />
+            </div>
+          </div>
+        )}
 
         {/* Buttons */}
-        <div className="mt-4 flex justify-center gap-4 mb-4">
-          <Button
-            onClick={takeScreenshot}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            <CameraIcon className="w-4 h-4" />
-            Take Photo
-          </Button>
-          {screenshot && (
+        <div className="flex justify-center gap-4 mb-4">
+          {!capturedPhoto && (
             <Button
-              onClick={shareScreenshot}
-              className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white"
+              onClick={capturePhoto}
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+              disabled={!cameraStarted}
             >
-              <Share2 className="w-4 h-4" />
-              Share/Download
+              <CameraIcon className="w-4 h-4" />
+              Capture Photo
             </Button>
           )}
+
+          {capturedPhoto && !finalResult && (
+            <>
+              <Button
+                onClick={applyProduct}
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+                disabled={isProcessing}
+              >
+                {isProcessing ? "Processing..." : "Apply Product"}
+              </Button>
+              <Button
+                onClick={retakePhoto}
+                className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
+              >
+                Retake Photo
+              </Button>
+            </>
+          )}
+
+          {finalResult && (
+            <>
+              <Button
+                onClick={shareResult}
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+              >
+                <Share2 className="w-4 h-4" />
+                Share/Download
+              </Button>
+              <Button
+                onClick={retakePhoto}
+                className="flex items-center gap-2 bg-orange-600 hover:bg-orange-700"
+              >
+                Try Again
+              </Button>
+            </>
+          )}
         </div>
-        {/* Screenshot preview */}
-        {screenshot && (
-          <div className="mt-4 mb-8 p-3 bg-white rounded-lg shadow">
-            <p className="text-center mb-2 font-medium">Screenshot</p>
+
+        {/* Final Result Display */}
+        {finalResult && (
+          <div className="mt-4 p-4 bg-white rounded-lg shadow">
+            <h3 className="text-center font-medium mb-3">Final Result</h3>
             <img
-              src={screenshot}
-              alt="Try-on screenshot"
-              className="max-w-full rounded-lg mx-auto"
+              src={finalResult}
+              alt="Try-on result"
+              className="max-w-full rounded-lg mx-auto border-2 border-gray-300"
             />
           </div>
         )}
