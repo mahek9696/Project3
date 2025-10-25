@@ -195,6 +195,10 @@ export default function TryOn() {
         canvasRef.current.height
       );
 
+      // Flip the canvas horizontally (mirror effect)
+      canvasCtx.translate(canvasRef.current.width, 0);
+      canvasCtx.scale(-1, 1);
+
       // Show live camera feed
       canvasCtx.drawImage(
         results.image,
@@ -371,9 +375,11 @@ export default function TryOn() {
       const detectedLandmarks = detectionResult.multiFaceLandmarks[0];
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw captured photo (already flipped from capture)
       ctx.drawImage(capturedImg, 0, 0, canvas.width, canvas.height);
 
-      // Get key landmarks
+      // Get key landmarks (they're already in flipped coordinates)
       const leftEye = detectedLandmarks[33];
       const rightEye = detectedLandmarks[263];
       const chin = detectedLandmarks[152];
@@ -443,7 +449,6 @@ export default function TryOn() {
       setIsProcessing(false);
     }
   }, [capturedPhoto, img, neckOffset, scaleMultiplier]);
-
   const retakePhoto = useCallback(() => {
     setCapturedPhoto(null);
     setFinalResult(null);
