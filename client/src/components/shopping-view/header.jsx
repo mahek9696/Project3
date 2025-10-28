@@ -97,8 +97,12 @@ function HeaderRightContent() {
           onClick={() => setOpenCartSheet(true)}
           variant="ghost"
           size="icon"
+          className="relative"
         >
           <ShoppingCart className="h-6 w-6" />
+          <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+            {cartItems && cartItems.items ? cartItems.items.length : 0}
+          </span>
           <span className="sr-only">User cart</span>
         </Button>
         <UserCartWrapper

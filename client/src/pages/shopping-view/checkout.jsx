@@ -115,14 +115,12 @@ function ShoppingCheckout() {
             </div>
           </div>
           <div className="mt-4 w-full">
-            <Button
-              className="w-full"
-              onClick={handleInitiatePaypalPayment}
-              // {isPaymentStart
-              //   ? "Processing Paypal Payment..."
-              //   : "Checkout with Paypal"}
-            >
-              <span className="font-bold">Checkout with Paypal</span>
+            <Button className="w-full" onClick={handleInitiatePaypalPayment}>
+              <span className="font-bold">
+                {isPaymentStart
+                  ? "Processing Paypal Payment..."
+                  : "Checkout with Paypal"}
+              </span>
             </Button>
           </div>
         </div>

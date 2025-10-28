@@ -9,6 +9,7 @@ import orderSlice from "./shop/order-slice";
 import AdminOrderSlice from "./admin/order-slice";
 import shopSearchSlice from "./shop/search-slice";
 import shopReviewSlice from "./shop/review-slice";
+import commonSlice from "./common-slice"; // Add this
 
 const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ const store = configureStore({
     adminOrder: AdminOrderSlice,
     shopSearch: shopSearchSlice,
     shopReview: shopReviewSlice,
+    commonFeature: commonSlice, // Add this
   },
 });
 export default store;
