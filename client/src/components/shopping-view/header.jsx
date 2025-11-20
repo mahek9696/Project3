@@ -28,6 +28,7 @@ import UserCartWrapper from "./cart-wrapper";
 import { useEffect, useState } from "react";
 import { fetchCartItems } from "@/store/shop/cart-slice";
 import logo from "@/assets/gujarat-vidyapith-logo.png";
+import logo3 from "@/assets/logo4.png";
 
 function MenuItems() {
   const navigate = useNavigate();
@@ -154,10 +155,10 @@ function ShoppingHeader() {
           <HousePlug className="h-6 w-6" />
           <span className="font-bold">Ecommerce</span>
         </Link> */}
-        <div className="d-flex logo-outer w-20 h-20 justify-content-between align-items-center d-lg-block">
+        <div className="d-flex logo-outer w-20 h-20 p-2 justify-content-between align-items-center d-lg-block">
           <a href="//gujaratvidyapith.org/" className="logo-wrap text-center">
             <img
-              src={logo}
+              src={logo3}
               alt="gujarat-vidyapith-logo"
               width="100"
               height="100"

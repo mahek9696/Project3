@@ -1,7 +1,10 @@
 import { Button } from "@/components/ui/button";
 import bannerTwo from "../../assets/BannerOne.png";
-import bannerOne from "../../assets/BannerTwo.png";
+import bannerFour from "../../assets/ss1.png";
+import bannerFive from "../../assets/ss2.png";
+import bannerOne from "../../assets/account2.png";
 import bannerThree from "../../assets/logo.png";
+import logo from "../../assets/logo4.png";
 import {
   Airplay,
   BabyIcon,
@@ -17,6 +20,14 @@ import {
   UmbrellaIcon,
   WashingMachine,
   WatchIcon,
+  Phone,
+  Globe,
+  Mail,
+  // Whatsapp,
+  X,
+  // Facebook,
+  // Instagram,
+  // Youtube,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
@@ -61,6 +72,7 @@ function ShoppingHome() {
     navigate(`/shop/listing`);
   }
 
+  // single definition of product details handler
   function handleGetProductDetails(getCurrentProductId) {
     dispatch(fetchProductDetails(getCurrentProductId));
   }
@@ -83,12 +95,17 @@ function ShoppingHome() {
   }
 
   useEffect(() => {
+    // use featureImageList if available, otherwise fallback to static slides
+    const slideCount =
+      (featureImageList && featureImageList.length) || slides.length;
+    if (!slideCount) return; // avoid modulo by zero / NaN
+
     const timer = setInterval(() => {
-      setCurrentSlide((prevSlide) => (prevSlide + 1) % featureImageList.length);
+      setCurrentSlide((prev) => (prev + 1) % slideCount);
     }, 2000);
 
     return () => clearInterval(timer);
-  }, [featureImageList.length]);
+  }, [featureImageList?.length, slides.length]);
 
   useEffect(() => {
     dispatch(
@@ -152,15 +169,31 @@ function ShoppingHome() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="relative w-full h-[600px] overflow-hidden">
+      <img
+        className="relative p-12 w-full h-[600px] overflow-hidden pt-10 rounded-md object-cover"
+        src={bannerOne}
+        alt="Banner"
+      />
+      <div className="h-auto font-montserrat bg-white p-6 mt-6 rounded-md shadow-md">
+        <p className="">
+          {" "}
+          Instead of offering plastic decorative gifts or bouquets for welcoming
+          guests and dignitaries, adopt “Khadisutra” as a symbol of respect and
+          tradition. At Gujarat Vidyapith, students, teachers, and all staff
+          members spin yarn on charkha every day during morning prayer in a
+          spiritual and devotional atmosphere. This practice promotes inner
+          reflection and devotion, embodying the essence of "Khadisutra."
+        </p>
+      </div>
+      {/* <div className="relative w-full h-[600px] overflow-hidden">
         {featureImageList && featureImageList.length > 0
           ? featureImageList.map((slide, index) => (
               <img
                 src={slide?.image}
                 key={index}
                 className={`${
-                  index === currentSlide ? "opacity-100" : "opacity-0"
-                } absolute top-0 left-0 w-full h-full pt-10 object-cover transition-opacity duration-1000`}
+                  index === currentSlide ? "opacity-80 " : "opacity-0"
+                } absolute top-0 left-0 w-full h-full pt-10 object-cover transition-opacity-30 duration-5000 `}
               />
             ))
           : null}
@@ -178,6 +211,8 @@ function ShoppingHome() {
           <ChevronLeftIcon className="w-4 h-4" />
         </Button>
         <Button
+          variant="outline"
+          size="icon"
           className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white/80"
           onClick={() =>
             setCurrentSlide((prevSlide) => (prevSlide + 1) % slides.length)
@@ -185,8 +220,7 @@ function ShoppingHome() {
         >
           <ChevronRightIcon className="w-4 h-4" />
         </Button>
-      </div>
-
+      </div> */}
       {/* <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">
@@ -209,10 +243,11 @@ function ShoppingHome() {
           </div>
         </div>
       </section> */}
-
-      <section className="py-12 bg-gray-50">
+      <section className="py-12 mt-6 rounded-md shadow-md">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">Shop by Color</h2>
+          <h2 className="text-3xl text-red-950 font-montserrat text-center mb-8">
+            Shop by Color
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4">
             {colorWithIcon.map((colorItem) => (
               <Card
@@ -220,13 +255,13 @@ function ShoppingHome() {
                 onClick={() => handleNavigateToListingPage(colorItem, "color")}
                 className="cursor-pointer hover:shadow-lg transition-shadow"
               >
-                <CardContent className="flex flex-col items-center justify-center p-6">
+                <CardContent className="flex flex-col items-center justify-center p-6 rounded">
                   <div
                     className="w-12 h-12 rounded-full mb-4"
                     style={{
                       background: colorItem.color,
                       border:
-                        colorItem.id === "white" ? "1px solid #e2e8f0" : "none",
+                        colorItem.id === "white" ? "0px solid #e2e8f0" : "none",
                     }}
                   />
                   {/* <span className="font-bold">{colorItem.label}</span> */}
@@ -236,7 +271,19 @@ function ShoppingHome() {
           </div>
         </div>
       </section>
-
+      <p className="text-center text-red-950 mb-6 text-xl font-montserrat p-20 bg-orange-50 rounded-md">
+        For the welcome and respect of guests and visitors, adopt “Khadi Sutra”
+        instead of flowers, bouquets, or decorative plastic gifts. At Gujarat
+        Vidyapith, students, teachers, and all staff members, during the daily
+        prayer time, spin cotton on the charkha with devotion—filled with
+        spiritual thoughts and the vibrations of self-reflection in their
+        hearts—and prepare the “Khadi Sutra.”
+      </p>
+      {/* <img
+        className="relative w-full h-[600px] overflow-hidden pt-10 rounded-md object-cover"
+        src={bannerFour}
+        alt="Banner"
+      /> */}
       {/* <section className="py-12 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-8">Shop by Brand</h2>
@@ -255,16 +302,16 @@ function ShoppingHome() {
           </div>
         </div>
       </section> */}
-
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8">
+          <h2 className="text-3xl font-montserrat text-red-950 text-center mb-8">
             Feature Products
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
             {productList && productList.length > 0
               ? productList.map((productItem) => (
                   <ShoppingProductTile
+                    key={productItem._id || productItem.id}
                     handleGetProductDetails={handleGetProductDetails}
                     product={productItem}
                     handleAddtoCart={handleAddtoCart}
@@ -279,6 +326,111 @@ function ShoppingHome() {
         setOpen={setOpenDetailsDialog}
         productDetails={productDetails}
       />
+      {/* footer */}
+      <div className="mt-auto font-montserrat ">
+        <footer className="bg-orange-50 opacity-75 text-red-950 py-10 rounded-md shadow-md">
+          <div className="max-w-6xl mx-auto px-6 border-2 border-red-950 p-6 rounded-md">
+            <h2 className="text-4xl md:text-5xl font-extrabold text-center mb-6 font-montserrat">
+              संपर्क
+            </h2>
+            {/* center column - description */}
+            <div className="text-center md:text-center mb-8">
+              <p className="text-3xl md:text-3xl font-semibold">
+                विद्यार्थी रमत गमत, सांस्कृतिक और कल्याण शाखा, गुजरात विद्यापीठ,
+                अहमदाबाद
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+              {/* left column - phone & website */}
+              <div className="flex flex-col items-start gap-6">
+                <div className="flex items-center gap-4">
+                  <div className="bg-red-950 text-orange-100 rounded-full p-3">
+                    <Phone className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <div className="text-lg md:text-xl font-bold">
+                      96620 04971, 70166 09388
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <div className="bg-red-950 text-orange-100 rounded-full p-3">
+                    <Globe className="w-6 h-6" />
+                  </div>
+                  <a
+                    href="https://www.gujaratvidyapith.org"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-lg md:text-xl font-bold underline"
+                  >
+                    www.gujaratvidyapith.org
+                  </a>
+                </div>
+              </div>
+
+              {/* right column - email & socials */}
+              <div className="pl-60 items-end md:text-right">
+                <div className="flex items-center gap-4">
+                  <div className="bg-red-950 text-orange-100 rounded-full p-3">
+                    <Mail className="w-6 h-6" />
+                  </div>
+                  <div className="text-lg md:text-xl font-bold">
+                    sscw@gujaratvidyapith.org
+                  </div>
+                </div>
+
+                {/* <div className="flex items-center gap-3">
+                  <a
+                    href="#"
+                    className="bg-white rounded-full p-2 text-[#8B1D1D] flex items-center justify-center"
+                    aria-label="Whatsapp"
+                  >
+                    <Whatsapp className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-white rounded-full p-2 text-[#8B1D1D] flex items-center justify-center"
+                    aria-label="Facebook"
+                  >
+                    <Facebook className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-white rounded-full p-2 text-[#8B1D1D] flex items-center justify-center"
+                    aria-label="Instagram"
+                  >
+                    <Instagram className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-white rounded-full p-2 text-[#8B1D1D] flex items-center justify-center"
+                    aria-label="YouTube"
+                  >
+                    <Youtube className="w-5 h-5" />
+                  </a>
+                  <a
+                    href="#"
+                    className="bg-white rounded-full p-2 text-[#8B1D1D] flex items-center justify-center"
+                    aria-label="X"
+                  >
+                    <X className="w-5 h-5" />
+                  </a>
+
+                  <span className="ml-3 text-lg md:text-xl font-bold">
+                    @gvp1920
+                  </span>
+                </div> */}
+              </div>
+            </div>
+
+            <p className="text-center mt-6 text-sm opacity-80">
+              &copy; {new Date().getFullYear()} Khadi Sutra. All rights
+              reserved.
+            </p>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }

@@ -124,9 +124,9 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
 
   return (
     <Dialog open={open} onOpenChange={handleDialogClose}>
-      <DialogContent className="grid grid-cols-2 gap-8 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw]">
+      <DialogContent className="grid grid-cols-2 font-montserrat gap-8 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw]">
         <DialogTitle className="sr-only">Product Details</DialogTitle>
-        <div className="relative overflow-hidden rounded-lg">
+        <div className="relative overflow-hidden rounded-lg bg-stone-800">
           <img
             src={productDetails?.image}
             alt={productDetails?.title}
@@ -192,7 +192,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             ) : (
               <>
                 <Button
-                  className="flex-1"
+                  className="flex-1 font-montserrat"
                   onClick={() =>
                     handleAddtoCart(
                       productDetails?._id,
@@ -206,7 +206,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
                 <Button
                   variant="outline"
                   onClick={handleTryOn}
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 font-montserrat"
                 >
                   <Shirt className="h-4 w-4" />
                   Try On
@@ -215,7 +215,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
             )}
           </div>
           <Separator />
-          <div className="max-h-[300px] overflow-auto">
+          <div className="max-h-[300px] overflow-auto font-montserrat mt-5">
             <h2 className="text-sm font-bold mb-4">Reviews</h2>
             <div className="grid gap-6">
               {reviews && reviews.length > 0 ? (
