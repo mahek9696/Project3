@@ -78,14 +78,15 @@ function UserCartItemsContent({ cartItem }) {
   }
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-4 font-montserrat">
       <img
         src={cartItem?.image}
         alt={cartItem?.title}
-        className="w-20 h-20 rounded object-cover"
+        className="w-20 h-30 rounded object-cover bg-stone-800"
       />
-      <div className="flex-1">
+      <div className="flex-1 text-left">
         <h3 className="">{cartItem?.title}</h3>
+        <h4 className="text-sm text-gray-600">{cartItem?.description}</h4>
         <div className="flex items-center gap-2 mt-1">
           <Button
             variant="default"

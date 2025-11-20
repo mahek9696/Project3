@@ -146,15 +146,17 @@ function ShoppingHome() {
     { id: "h&m", label: "H&M", icon: Heater },
   ];
   const colorWithIcon = [
-    { id: "black", label: "Black", color: "#000000" },
-    { id: "white", label: "White", color: "#FFFFFF" },
-    { id: "red", label: "Red", color: "#FF0000" },
-    { id: "blue", label: "Blue", color: "#0000FF" },
-    { id: "green", label: "Green", color: "#00FF00" },
-    { id: "yellow", label: "Yellow", color: "#FFFF00" },
-    { id: "purple", label: "Purple", color: "#800080" },
-    { id: "brown", label: "Brown", color: "#964B00" },
-    { id: "gray", label: "Gray", color: "#808080" },
+    // { id: "black", label: "Black", color: "#000000" },
+    // { id: "white", label: "White", color: "#FFFFFF" },
+    { id: "red", label: "Red", color: "#E3301C" },
+    { id: "blue", label: "Blue", color: "#2471A3" },
+    { id: "green", label: "Green", color: "#28B463" },
+    { id: "yellow", label: "Yellow", color: "#F1C40F" },
+    { id: "purple", label: "Purple", color: "#8E44AD" },
+    { id: "brown", label: "Brown", color: "#BA4A00" },
+    { id: "gray", label: "Gray", color: "#3A5169" },
+    { id: "pink", label: "Pink", color: "#FF69B4" },
+    { id: "orange", label: "Orange", color: "#F39C12" },
     {
       id: "multicolor",
       label: "Multicolor",
@@ -170,11 +172,11 @@ function ShoppingHome() {
   return (
     <div className="flex flex-col min-h-screen">
       <img
-        className="relative p-12 w-full h-[600px] overflow-hidden pt-10 rounded-md object-cover"
+        className="pl-60 pt-20 pb-20 w-2/3 h-1/3 ml-12 overflow-hidden rounded-md object-cover"
         src={bannerOne}
         alt="Banner"
       />
-      <div className="h-auto font-montserrat bg-white p-6 mt-6 rounded-md shadow-md">
+      <div className="h-auto font-montserrat bg-white p-6 mt-6 rounded-md shadow-md gap-5">
         <p className="">
           {" "}
           Instead of offering plastic decorative gifts or bouquets for welcoming
@@ -243,25 +245,25 @@ function ShoppingHome() {
           </div>
         </div>
       </section> */}
-      <section className="py-12 mt-6 rounded-md shadow-md">
+      <section className="py-12 mt-6 rounded-2xl">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl text-red-950 font-montserrat text-center mb-8">
             Shop by Color
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4">
+          <div className="grid grid-cols-3 md:grid-cols-5 lg:grid-cols-10 gap-4 p-6 rounded-2xl">
             {colorWithIcon.map((colorItem) => (
               <Card
                 key={colorItem.id}
                 onClick={() => handleNavigateToListingPage(colorItem, "color")}
-                className="cursor-pointer hover:shadow-lg transition-shadow"
+                className="cursor-pointer hover:shadow-lg transition-shadow border-2 border-white rounded-xl"
               >
-                <CardContent className="flex flex-col items-center justify-center p-6 rounded">
+                <CardContent className="flex flex-col items-center justify-center p-6 rounded-4xl">
                   <div
                     className="w-12 h-12 rounded-full mb-4"
                     style={{
                       background: colorItem.color,
                       border:
-                        colorItem.id === "white" ? "0px solid #e2e8f0" : "none",
+                        colorItem.id === "white" ? "2px solid #e2e8f0" : "none",
                     }}
                   />
                   {/* <span className="font-bold">{colorItem.label}</span> */}
@@ -271,14 +273,16 @@ function ShoppingHome() {
           </div>
         </div>
       </section>
-      <p className="text-center text-red-950 mb-6 text-xl font-montserrat p-20 bg-orange-50 rounded-md">
-        For the welcome and respect of guests and visitors, adopt “Khadi Sutra”
-        instead of flowers, bouquets, or decorative plastic gifts. At Gujarat
-        Vidyapith, students, teachers, and all staff members, during the daily
-        prayer time, spin cotton on the charkha with devotion—filled with
-        spiritual thoughts and the vibrations of self-reflection in their
-        hearts—and prepare the “Khadi Sutra.”
-      </p>
+      <div className="flex justify-center mt-6">
+        <p className="text-center text-red-950 mb-6 text-xl font-montserrat p-20 bg-orange-50 rounded-md shadow-md">
+          For the welcome and respect of guests and visitors, adopt “Khadi
+          Sutra” instead of flowers, bouquets, or decorative plastic gifts. At
+          Gujarat Vidyapith, students, teachers, and all staff members, during
+          the daily prayer time, spin cotton on the charkha with devotion—filled
+          with spiritual thoughts and the vibrations of self-reflection in their
+          hearts—and prepare the “Khadi Sutra.”
+        </p>
+      </div>
       {/* <img
         className="relative w-full h-[600px] overflow-hidden pt-10 rounded-md object-cover"
         src={bannerFour}

@@ -126,7 +126,7 @@ function ProductDetailsDialog({ open, setOpen, productDetails }) {
     <Dialog open={open} onOpenChange={handleDialogClose}>
       <DialogContent className="grid grid-cols-2 font-montserrat gap-8 sm:p-12 max-w-[90vw] sm:max-w-[80vw] lg:max-w-[70vw]">
         <DialogTitle className="sr-only">Product Details</DialogTitle>
-        <div className="relative overflow-hidden rounded-lg bg-stone-800">
+        <div className="relative overflow-hidden rounded-lg bg-stone-600">
           <img
             src={productDetails?.image}
             alt={productDetails?.title}
