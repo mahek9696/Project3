@@ -28,6 +28,7 @@ import PaypalReturnPage from "./pages/shopping-view/paypal-return";
 import PaymentSuccessPage from "./pages/shopping-view/payment-success.jsx";
 import ShoppingSearchPage from "./pages/shopping-view/search.jsx";
 import TryOn from "./components/shopping-view/TryOn.jsx";
+import ProcessPage from "@/pages/shopping-view/process";
 
 function App() {
   const { user, isAuthenticated, isLoading } = useSelector(
@@ -110,6 +111,7 @@ function App() {
           <Route path="payment-success" element={<PaymentSuccessPage />} />
           <Route path="search" element={<ShoppingSearchPage />} />
           <Route path="try-on" element={<TryOn />} />
+          <Route path="process" element={<ProcessPage />} />
         </Route>
 
         <Route path="/unauth-page" element={<UnauthPage />} />

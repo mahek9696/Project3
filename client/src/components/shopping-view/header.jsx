@@ -65,6 +65,12 @@ function MenuItems() {
           {menuItem.label}
         </Label>
       ))}
+      <Label
+        onClick={() => navigate("/shop/process")}
+        className="text-sm font-medium cursor-pointer"
+      >
+        Process
+      </Label>
     </nav>
   );
 }

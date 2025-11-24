@@ -178,7 +178,6 @@ function ShoppingHome() {
       />
       <div className="h-auto font-montserrat bg-white p-6 mt-6 rounded-md shadow-md gap-5">
         <p className="">
-          {" "}
           Instead of offering plastic decorative gifts or bouquets for welcoming
           guests and dignitaries, adopt “Khadisutra” as a symbol of respect and
           tradition. At Gujarat Vidyapith, students, teachers, and all staff
